@@ -47,21 +47,3 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
-
-# SQL and backup
-*.backup
-*.sqlite3
-
-# project folder
-*project/
-venv/
-pcheck_env/
-manage.py
-static/fontawesome/
-static/js/bootstrap.*
-static/js/jquery*.*
-staticfiles/
-.env
-main_app/migrations/
-account/migrations/
-bookings_attachments/
