@@ -1,0 +1,738 @@
+/* Loader */
+.loader {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Buttons */
+.menu-button {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: none;
+    padding: 0.5em 1em;
+    cursor: pointer;
+    margin-bottom: 1em;
+    color: black;
+}
+
+.user-class-button,
+.next-button {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: orange;
+    cursor: pointer;
+    color: black;
+    font-size: large;
+}
+
+.user-class-button {
+    width: 7em;
+    height: 7em;
+    margin-bottom: 1em;
+}
+
+.next-button {
+    margin-top: 3em;
+    margin-bottom: 1em;
+    width: 80%;
+}
+
+.next-button:hover {
+    background: #f3eea8;
+}
+
+/* Stepper */
+.step {
+    display: none;
+    margin-bottom: 20px;
+}
+
+.active {
+    display: block;
+}
+
+.otp {
+    margin-right: 0.5em;
+    margin-bottom: 1em;
+    width: 3em;
+    text-align: center;
+}
+
+/* Global */
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Layout Wrapper */
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* Sidebar - Clean Design with Black/Grey Background */
+nav.sidebar,
+.sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100vh !important;
+    width: 250px !important;
+    background-color: #1a1d20 !important;
+    background: #1a1d20 !important;
+    overflow-y: auto !important;
+    z-index: 1000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    border: none !important;
+}
+
+.sidebar-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.5rem 0;
+}
+
+.sidebar-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1rem;
+}
+
+.sidebar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff;
+    text-decoration: none;
+    display: block;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-brand:hover {
+    color: #ffffff;
+}
+
+.sidebar-menu {
+    flex: 1;
+    padding: 0.5rem 0;
+}
+
+.sidebar-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.sidebar-nav li {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar-link {
+    display: flex !important;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.5rem !important;
+    color: #adb5bd !important;
+    text-decoration: none !important;
+    transition: all 0.2s;
+    border: none !important;
+    background: none !important;
+    background-color: transparent !important;
+    width: 100%;
+}
+
+.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+}
+
+.sidebar-link.active {
+    color: #ffc107;
+    background-color: transparent;
+}
+
+.sidebar-link.active i {
+    color: #ffc107;
+}
+
+.sidebar-link i {
+    width: 20px;
+    text-align: center;
+    color: #adb5bd;
+    flex-shrink: 0;
+}
+
+.sidebar-link.active i {
+    color: #ffc107;
+}
+
+.sidebar-link span {
+    flex: 1;
+}
+
+.sidebar-bottom {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-dropdown {
+    position: relative;
+}
+
+.sidebar-dropdown-menu,
+.sidebar .dropdown-menu {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    margin-left: 0.5rem;
+    min-width: 200px;
+    background-color: #1a1d20 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 0.375rem;
+    list-style: none;
+    padding: 0.5rem 0;
+    margin: 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-dropdown-item,
+.sidebar .dropdown-item {
+    padding: 0.5rem 1rem !important;
+    color: #adb5bd !important;
+    display: flex !important;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    transition: all 0.2s;
+    background: transparent !important;
+    border: none !important;
+}
+
+.sidebar-dropdown-item:hover,
+.sidebar .dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+}
+
+.sidebar-dropdown-item i {
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-divider {
+    margin: 0.5rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    opacity: 1;
+}
+
+/* Main Content Area */
+.main-content {
+    margin-left: 250px;
+    padding: 0;
+    width: calc(100% - 250px);
+    min-height: 100vh;
+    background-color: #ffffff;
+}
+
+/* Main Header with Logo */
+.main-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 0;
+    margin: 0;
+    position: relative;
+}
+
+.main-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #495057;
+}
+
+.main-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background-color: #ff9800;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.5rem 2rem;
+    margin-left: 3px;
+}
+
+.header-logo {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: flex-start;
+}
+
+.header-title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #ff9800;
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
+    font-family: sans-serif;
+    font-weight: 700;
+}
+
+.header-subtitle {
+    font-size: 1.25rem;
+    color: #000000;
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
+    font-family: sans-serif;
+    font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .sidebar {
+        width: 0;
+        overflow: hidden;
+        transition: width 0.3s;
+    }
+
+    .sidebar.mobile-open {
+        width: 250px;
+    }
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+/* Override Bootstrap styles to prevent conflicts - Strong overrides */
+.sidebar * {
+    box-sizing: border-box;
+}
+
+/* Ensure no Bootstrap navbar styles apply */
+.sidebar.navbar,
+.sidebar .navbar-nav,
+.sidebar .nav-item,
+.sidebar .nav-link,
+.sidebar .navbar-brand,
+nav.sidebar {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+}
+
+/* Force sidebar background */
+nav.sidebar,
+.sidebar {
+    background-color: #1a1d20 !important;
+    background: #1a1d20 !important;
+}
+
+/* Override any Bootstrap bg-dark class if it exists */
+.sidebar.bg-dark,
+nav.sidebar.bg-dark {
+    background-color: #1a1d20 !important;
+    background: #1a1d20 !important;
+}
+
+/* QR Code Scanner */
+.sidebar-qr-scanner {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(220, 220, 220, 0.3);
+    border-radius: 8px;
+    border: 1px solid rgba(200, 200, 200, 0.5);
+}
+
+.qr-scanner-screen {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    background-color: #f5f5f5;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #333333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.qr-reader-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+.qr-reader-container:empty {
+    display: none;
+}
+
+.qr-reader-container video,
+.qr-reader-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    display: block;
+}
+
+.qr-reader-container > div {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Hide html5-qrcode default UI elements */
+.qr-reader-container #html5-qrcode-button-camera-permission,
+.qr-reader-container #html5-qrcode-button-camera-start,
+.qr-reader-container #html5-qrcode-button-camera-stop,
+.qr-reader-container select {
+    display: none !important;
+}
+
+.qr-reader-container #html5qr-code-full-region {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.qr-reader-container #html5qr-code-full-region__dashboard {
+    display: none !important;
+}
+
+.qr-reader-container #html5qr-code-full-region__scan_region {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.qr-reader-container #html5qr-code-full-region__scan_region video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+/* QR Placeholder Pattern */
+.qr-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10%;
+    background-color: #f5f5f5;
+    z-index: 2;
+}
+
+.qr-pattern {
+    width: 80%;
+    height: 80%;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    gap: 2px;
+}
+
+/* Finder Patterns */
+.qr-finder-pattern {
+    position: absolute;
+    width: 28%;
+    height: 28%;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+}
+
+.qr-top-left {
+    top: 0;
+    left: 0;
+}
+
+.qr-top-right {
+    top: 0;
+    right: 0;
+}
+
+.qr-bottom-left {
+    bottom: 0;
+    left: 0;
+}
+
+.qr-finder-outer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 3px solid #1976d2;
+    border-radius: 2px;
+    box-shadow: 0 0 15px rgba(25, 118, 210, 0.8), inset 0 0 12px rgba(25, 118, 210, 0.4);
+}
+
+.qr-finder-inner {
+    position: absolute;
+    top: 14.3%;
+    left: 14.3%;
+    width: 71.4%;
+    height: 71.4%;
+    border: 2px solid #1976d2;
+    border-radius: 1px;
+    box-shadow: 0 0 12px rgba(25, 118, 210, 0.7), inset 0 0 10px rgba(25, 118, 210, 0.3);
+}
+
+.qr-finder-center {
+    position: absolute;
+    top: 28.6%;
+    left: 28.6%;
+    width: 42.8%;
+    height: 42.8%;
+    background-color: #1976d2;
+    border-radius: 1px;
+    box-shadow: 0 0 20px rgba(25, 118, 210, 1), inset 0 0 15px rgba(255, 255, 255, 0.6);
+}
+
+/* QR Data Modules */
+.qr-module {
+    position: absolute;
+    background-color: #1976d2;
+    border-radius: 1px;
+    box-shadow: 0 0 12px rgba(25, 118, 210, 0.9), inset 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.qr-module-1 { top: 28.5%; left: 28.5%; width: 14.3%; height: 14.3%; }
+.qr-module-2 { top: 28.5%; left: 42.8%; width: 14.3%; height: 14.3%; }
+.qr-module-3 { top: 42.8%; left: 28.5%; width: 14.3%; height: 14.3%; }
+.qr-module-4 { top: 42.8%; left: 42.8%; width: 14.3%; height: 14.3%; }
+.qr-module-5 { top: 28.5%; left: 57.1%; width: 14.3%; height: 14.3%; }
+.qr-module-6 { top: 42.8%; left: 57.1%; width: 14.3%; height: 14.3%; }
+.qr-module-7 { top: 57.1%; left: 28.5%; width: 14.3%; height: 14.3%; }
+.qr-module-8 { top: 57.1%; left: 42.8%; width: 14.3%; height: 14.3%; }
+.qr-module-9 { top: 57.1%; left: 57.1%; width: 14.3%; height: 14.3%; }
+.qr-module-10 { top: 14.2%; left: 42.8%; width: 14.3%; height: 14.3%; }
+.qr-module-11 { top: 42.8%; left: 14.2%; width: 14.3%; height: 14.3%; }
+.qr-module-12 { top: 71.4%; left: 28.5%; width: 14.3%; height: 14.3%; }
+.qr-module-13 { top: 71.4%; left: 42.8%; width: 14.3%; height: 14.3%; }
+.qr-module-14 { top: 71.4%; left: 57.1%; width: 14.3%; height: 14.3%; }
+.qr-module-15 { top: 85.7%; left: 28.5%; width: 14.3%; height: 14.3%; }
+.qr-module-16 { top: 85.7%; left: 42.8%; width: 14.3%; height: 14.3%; }
+
+.qr-placeholder-text {
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #ffffff;
+    font-family: sans-serif;
+    letter-spacing: 1px;
+    margin-top: 0.5rem;
+    padding: 0.25rem 0;
+}
+
+.qr-scanner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+}
+
+.qr-scanner-frame {
+    width: 70%;
+    height: 70%;
+    border: 2px solid #00ff00;
+    border-radius: 8px;
+    box-shadow: 
+        0 0 0 9999px rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(0, 255, 0, 0.5);
+    position: relative;
+}
+
+.qr-scanner-frame::before,
+.qr-scanner-frame::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #00ff00;
+}
+
+.qr-scanner-frame::before {
+    top: -3px;
+    left: -3px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.qr-scanner-frame::after {
+    bottom: -3px;
+    right: -3px;
+    border-left: none;
+    border-top: none;
+}
+
+.qr-scanner-status {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.8);
+    color: #ffffff;
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 4;
+}
+
+.qr-scanner-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    width: 100%;
+}
+
+.qr-scanner-btn {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.qr-scanner-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.qr-scanner-btn i {
+    font-size: 1rem;
+}
+
+.qr-scanner-result {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background-color: rgba(0, 255, 0, 0.1);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    border-radius: 4px;
+    color: #00ff00;
+    font-size: 0.7rem;
+    word-break: break-all;
+    text-align: center;
+}
+
+/* PC List - Make rows clickable */
+.edit-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.edit-row:hover {
+    background-color: rgba(0, 123, 255, 0.1) !important;
+}
+
+.edit-row td {
+    user-select: none;
+}
+
+/* PC List Button View */
+.pc-list-button {
+    background: none;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 15px 10px;
+    margin: 0;
+    width: 100%;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.pc-list-button:hover {
+    border-color: #007bff;
+    background-color: rgba(0, 123, 255, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+}
+
+.pc-list-button.selected-pc {
+    border-color: #007bff;
+    background-color: rgba(0, 123, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.pc-container {
+    position: relative;
+    padding: 5px;
+}
+
+.pc-container .delete-pc-btn {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.pc-container:hover .delete-pc-btn {
+    opacity: 1;
+}
+
+.pc-status-indicator {
+    font-size: 0.6em;
+}
+
+.pc-list-button .pc-name {
+    font-size: 0.9em;
+    font-weight: 500;
+    display: block;
+    margin-top: 5px;
+}

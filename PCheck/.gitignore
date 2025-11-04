@@ -49,20 +49,9 @@ Thumbs.db
 *.wmv
 
 # Backups and SQLite
-backup
-*.sqlite3
+# (intentionally tracked)
 
 # project folder
-*project/
-venv/
-pcheck_env/
-manage.py
-static/fontawesome/
-static/js/bootstrap.*
-static/js/jquery*.*
-staticfiles/
-.env
-main_app/migrations/
-account/migrations/
-bookings_attachments/
+# (intentionally tracked)
+
 
