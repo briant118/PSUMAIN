@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Staff/Admin Login{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5 rounded">
+  <div class="card col-md-6 offset-md-3 border rounded shadow-lg mb-5 bg-body">
+    <div class="text-center card-body bg-primary text-white mb-3">
+      <h1><i class="fa-solid fa-user-shield"></i><br>Staff/Admin Login</h1>
+      <p class="mb-0">Access administrative functions</p>
+    </div>
+    <div class="form-section p-4">
+      {% if form.errors %}
+      <div class="alert alert-danger">
+        <strong>Login Failed!</strong>
+        {% if form.non_field_errors %}
+          {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        {% else %}
+          <p>Your username/email and password didn't match. Please try again.</p>
+        {% endif %}
+      </div>
+      {% endif %}
+      
+      <form action="{% url 'account:staff_login' %}" method="post">
+        {% csrf_token %}
+        
+        <div class="form-group mb-3">
+          <label for="{{ form.username.id_for_label }}" class="form-label">
+            <i class="fa-solid fa-user"></i> Username or Email
+          </label>
+          {{ form.username }}
+          {% if form.username.errors %}
+            <div class="text-danger">
+              {% for error in form.username.errors %}
+                <small>{{ error }}</small>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        
+        <div class="form-group mb-3">
+          <label for="{{ form.password.id_for_label }}" class="form-label">
+            <i class="fa-solid fa-lock"></i> Password
+          </label>
+          {{ form.password }}
+          {% if form.password.errors %}
+            <div class="text-danger">
+              {% for error in form.password.errors %}
+                <small>{{ error }}</small>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        
+        <div class="form-group mb-3">
+          <input type="hidden" name="next" value="{{ next }}" />
+          <button type="submit" class="btn btn-primary btn-lg w-100">
+            <i class="fa-solid fa-sign-in-alt"></i> Login
+          </button>
+        </div>
+        
+        <div class="text-center">
+          <p class="text-muted mb-2">Need help?</p>
+          <a href="{% url 'account:password_reset' %}" class="btn btn-link">
+            <i class="fa-solid fa-key"></i> Forgot Password?
+          </a>
+        </div>
+        
+        <hr class="my-4">
+        
+        <div class="text-center">
+          <p class="text-muted mb-2">Are you a student or faculty?</p>
+          <a href="{% url 'account:login' %}" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-graduation-cap"></i> Student/Faculty Login
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

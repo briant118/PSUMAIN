@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Enter Email Details{% endblock %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'css/mystyle.css' %}">
+<style>
+.next-button {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: orange;
+    cursor: pointer;
+    margin-top: 3em;
+    margin-bottom: 1em;
+    color: black;
+    width: 80%;
+    font-size: large;
+}
+
+button:hover {
+    background: #f3eea8;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5 rounded">
+  <div class="card col-md-6 offset-md-3 border rounded shadow-lg mb-5 bg-body">
+    <div class="text-center card-body bg-warning mb-3">
+      <h1>Hello, <br>Create your account</h1>
+    </div>
+    <div class="form-section card-body p-4">
+      <form method="post" action="{% url 'account:register_complete' %}">
+        {% csrf_token %}
+        
+        <!-- Hidden fields to pass all previous data -->
+        <input type="hidden" name="role" value="{{ role }}">
+        <input type="hidden" name="first_name" value="{{ first_name }}">
+        <input type="hidden" name="last_name" value="{{ last_name }}">
+        <input type="hidden" name="college" value="{{ college }}">
+        <input type="hidden" name="course" value="{{ course }}">
+        <input type="hidden" name="year" value="{{ year }}">
+        <input type="hidden" name="block" value="{{ block }}">
+        
+        <div>
+          <h3>Enter your email</h3>
+          <div class="d-flex" style="max-width: 500px;">
+            <input type="text" id="email_prefix" name="email_prefix"
+              placeholder="Email Address Prefix" required class="form-control me-2"
+              pattern="[A-Za-z0-9]+" title="Only letters and numbers are allowed">
+            <input type="text" id="email_domain" value="@psu.palawan.edu.ph" disabled class="form-control" style="max-width: 220px;">
+          </div>
+          <input type="hidden" name="email" id="email_full">
+          <div class="mt-2" style="max-width: auto;">
+            <input type="password" name="password" placeholder="Password" required class="form-control mb-2">
+            <input type="password" name="password2" placeholder="Re-enter password" required class="form-control mb-2">
+          </div>
+          <div class="text-center mt-1">
+            <button type="submit" class="next-button">Submit</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/registration.js' %}"></script>
+<script>
+$(document).ready(function() {
+    // Email validation regex
+    var regex = /^[a-zA-Z0-9]+$/;
+    
+    // Handle form submit
+    $("form").on("submit", function(e) {
+        console.log('=== EMAIL FORM SUBMIT TRIGGERED ===');
+        
+        // Validate email prefix
+        var prefix = $("#email_prefix").val().trim();
+        console.log('Email prefix:', prefix);
+
+        if (!regex.test(prefix)) {
+            alert("Email prefix must only contain letters and numbers (no @ or .).");
+            e.preventDefault();
+            return false;
+        }
+        
+        // Set the full email
+        var domain = "@psu.palawan.edu.ph";
+        $("#email_full").val(prefix + domain);
+        console.log('Email validation passed');
+        
+        // Validate password match
+        var password = $('input[name="password"]').val();
+        var password2 = $('input[name="password2"]').val();
+        
+        if (password !== password2) {
+            alert("Passwords do not match. Please re-enter your password.");
+            e.preventDefault();
+            return false;
+        }
+        
+        console.log('Form submission allowed - proceeding...');
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}OTP Code Verification{% endblock %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'css/mystyle.css' %}">
+<style>
+/* OTP Code Verification Styles */
+.oauth-container {
+    max-width: 450px;
+    margin: 0 auto;
+    padding: 48px 40px 36px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border: 1px solid #dadce0;
+}
+
+.oauth-logo {
+    width: 75px;
+    height: 24px;
+    margin: 0 auto 24px;
+    display: block;
+}
+
+.oauth-title {
+    font-size: 24px;
+    font-weight: 400;
+    color: #202124;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.oauth-subtitle {
+    font-size: 16px;
+    font-weight: 400;
+    color: #5f6368;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.oauth-form-group {
+    margin-bottom: 24px;
+}
+
+.oauth-input {
+    width: 100%;
+    height: 56px;
+    padding: 13px 15px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: transparent;
+    transition: border-color 0.2s ease;
+}
+
+.oauth-input:focus {
+    outline: none;
+    border-color: #1a73e8;
+    border-width: 2px;
+}
+
+.oauth-input.error {
+    border-color: #d93025;
+}
+
+.oauth-label {
+    font-size: 14px;
+    font-weight: 400;
+    color: #5f6368;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.oauth-button {
+    width: 100%;
+    height: 36px;
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.oauth-button:hover {
+    background-color: #1557b0;
+}
+
+.oauth-button:disabled {
+    background-color: #dadce0;
+    color: #5f6368;
+    cursor: not-allowed;
+}
+
+.oauth-link {
+    color: #1a73e8;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.oauth-link:hover {
+    text-decoration: underline;
+}
+
+.oauth-error {
+    color: #d93025;
+    font-size: 12px;
+    margin-top: 8px;
+}
+
+.oauth-info {
+    background-color: #e8f0fe;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    color: #5f6368;
+}
+
+.oauth-info-title {
+    font-weight: 500;
+    color: #1a73e8;
+    margin-bottom: 8px;
+}
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+}
+
+.container {
+    background-color: transparent;
+    padding-top: 100px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="oauth-container">
+        <!-- PSU Logo -->
+        <div class="oauth-logo">
+            <div style="font-size: 24px; font-weight: 600; color: #1a73e8; text-align: center;">
+                PSU
+            </div>
+            <div style="font-size: 12px; color: #5f6368; text-align: center; margin-top: 4px;">
+                Palawan State University
+            </div>
+        </div>
+        
+        <h1 class="oauth-title">OTP Code Verification</h1>
+        <p class="oauth-subtitle">Enter your 6-digit PSU OTP code</p>
+        
+        <div class="oauth-info">
+            <div class="oauth-info-title">OTP Code Instructions:</div>
+            <ol style="margin: 0; padding-left: 20px;">
+                <li>Check your PSU email inbox</li>
+                <li>Look for the email from PSU PCheck System</li>
+                <li>Find the 6-digit OTP code in the email</li>
+                <li>Enter the code below to complete registration</li>
+            </ol>
+            <p style="margin-top: 10px; font-size: 12px; color: #666;">
+                <strong>Note:</strong> The OTP code expires in 10 minutes. If you don't receive the email, check your spam folder.
+            </p>
+        </div>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="oauth-error">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="oauth-form-group">
+                <label class="oauth-label" for="otp_code">OTP Code</label>
+                <input type="text" 
+                       name="otp_code" 
+                       id="otp_code"
+                       class="oauth-input" 
+                       placeholder="Enter 6-digit OTP code" 
+                       maxlength="6"
+                       pattern="[0-9]{6}"
+                       required
+                       autocomplete="off">
+            </div>
+            
+            <div class="oauth-form-group">
+                <label class="oauth-label" for="email">Email Address</label>
+                <input type="email" 
+                       name="email" 
+                       id="email"
+                       class="oauth-input" 
+                       placeholder="Enter your email address" 
+                       required
+                       autocomplete="email">
+            </div>
+            
+            <button type="submit" class="oauth-button">
+                Verify OTP Code
+            </button>
+        </form>
+        
+        <div style="text-align: center; margin-top: 24px; font-size: 14px; color: #5f6368;">
+            <a href="{% url 'account:register' %}" class="oauth-link">
+                ← Back to Registration
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Add OAuth-style interactions
+    $('.oauth-input').on('focus', function() {
+        $(this).parent().addClass('focused');
+    }).on('blur', function() {
+        $(this).parent().removeClass('focused');
+    });
+    
+    // Form validation
+    $('form').on('submit', function(e) {
+        var otpCode = $('#otp_code').val().trim();
+        var email = $('#email').val().trim();
+        
+        if (!otpCode) {
+            $('#otp_code').addClass('error');
+            e.preventDefault();
+            return false;
+        }
+        
+        // Validate OTP format (6 digits)
+        if (!/^\d{6}$/.test(otpCode)) {
+            $('#otp_code').addClass('error');
+            e.preventDefault();
+            return false;
+        }
+        
+        if (!email) {
+            $('#email').addClass('error');
+            e.preventDefault();
+            return false;
+        }
+        
+        // Remove error classes
+        $('.oauth-input').removeClass('error');
+    });
+    
+    // Remove error class on input
+    $('.oauth-input').on('input', function() {
+        $(this).removeClass('error');
+    });
+});
+</script>
+{% endblock %}

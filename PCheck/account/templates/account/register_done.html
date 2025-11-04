@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+  <div class="card-body col-md-6 offset-md-3 border rounded shadow-lg p-4 mb-5 bg-body rounded">
+    <div>
+      <h1>Welcome {{ new_user.first_name }}!</h1>
+    </div>
+    <div>
+      <a href="#" class="btn btn-primary btn-lg btn-rounded">
+        Continue setting up your profile
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Update Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+  <div class="card col-md-6 offset-md-3 border rounded shadow-lg mb-5 bg-body">
+    <div class="card-header text-center bg-warning">
+      <h2>Update Profile</h2>
+    </div>
+    <div class="card-body rounded mb-1 bg-body">
+      {% if user.profile.profile_picture %}
+        <div class="text-center mb-3">
+          <img src="{{ user.profile.profile_picture.url }}" class="rounded-circle mb-2" alt="Current Profile Picture" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #ffc107;">
+          <p class="text-muted"><small>Current Profile Picture</small></p>
+        </div>
+      {% endif %}
+      <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="d-flex justify-content-between mt-3">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <a href="{% url 'account:profile' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

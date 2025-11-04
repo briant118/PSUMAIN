@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+{% load template_filters %}
+{% load static %}
+
+{% block title %}Bookings{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- ===== TOP-LEVEL TABS ===== -->
+  <div class="nav nav-tabs tabs">
+    <button id="tab-student-bookings" class="nav-link active tab">Student Bookings</button>
+    <button id="tab-faculty-bookings" class="nav-link tab position-relative">
+      {% if faculty_pending_count %}
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+        {{faculty_pending_count}}
+      </span>
+      {% endif %}
+      Faculty Bookings
+    </button>
+  </div>
+  
+  <!-- ===== STUDENT BOOKINGS CONTENT ===== -->
+  <div id="student-bookings">
+    <!-- DEBUG INFO -->
+    <div class="alert alert-info">
+      <strong>DEBUG:</strong> Total bookings: {{ student_bookings|length }}, 
+      Pending: {{ student_pending_count }}, 
+      Pending list: {{ student_pending_approvals|length }}
+    </div>
+    
+    <div class="nav nav-tabs subtabs">
+      <button id="tab-student-all" class="nav-link active subtab">All</button>
+      <button id="tab-student-pending" class="nav-link subtab position-relative">
+        {% if student_pending_count %}
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+          {{student_pending_count}}
+        </span>
+        {% endif %}
+        Pending
+      </button>
+      <button id="tab-student-approved" class="nav-link subtab">Approved</button>
+    </div>
+
+    <div id="student-all" class="subcontent">
+      <table class="table">
+        <head>
+          <tr>
+            <th colspan="5">Student Bookings</th>
+          </tr>
+          <tr>
+            <th>Name</th>
+            <th>College</th>
+            <th>Date</th>
+            <th>Inbox</th>
+            <th>Status</th>
+          </tr>
+        </head>
+        <tbody>
+          {% for booking in student_bookings %}
+          <tr>
+            <td>{{ booking.user.get_full_name }}</td>
+            <td>{{ booking.user.profile.college.name }}</td>
+            <td>{{ booking.created_at }}</td>
+            <td></td>
+            <td>{% if booking.status == None %}pending{% else %}{{ booking.status }}{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div id="student-pending" class="subcontent" hidden>
+      <table class="table">
+        <head>
+          <tr>
+            <th>Name</th>
+            <th>College</th>
+            <th>Date</th>
+            <th>Inbox</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </head>
+        <tbody>
+          {% for pending in student_pending_approvals %}
+          <tr>
+            <td>{{ pending.user.get_full_name }}</td>
+            <td>{{ pending.user.profile.college.name }}</td>
+            <td>{{ pending.created_at }}</td>
+            <td></td>
+            <td>{% if pending.status == None %}pending{% else %}{{ pending.status }}{% endif %}</td>
+            <td>
+              <button type="button"
+                      class="btn btn-sm btn-outline-secondary review-booking"
+                      data-name="{{ pending.user.get_full_name }}"
+                      data-college="{{ pending.user.profile.college.name }}"
+                      data-date="{{ pending.created_at }}"
+                      data-pc="{{ pending.pc.name|default:'-' }}"
+                      data-accept-url="{% url 'main_app:reservation-approval' pk=pending.pk %}">
+                review
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div id="student-approved" class="subcontent" hidden>
+      <table class="table">
+        <head>
+          <tr>
+            <th>Name</th>
+            <th>College</th>
+            <th>Date</th>
+            <th>Inbox</th>
+            <th>Status</th>
+          </tr>
+        </head>
+        <tbody>
+          {% for approved in student_approved_bookings %}
+          <tr>
+            <td>{{ approved.user.get_full_name }}</td>
+            <td>{{ approved.user.profile.college.name }}</td>
+            <td>{{ approved.created_at }}</td>
+            <td></td>
+            <td>{{ approved.status }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Booking Review Modal -->
+  <div class="modal fade" id="bookingReviewModal" tabindex="-1" aria-labelledby="bookingReviewLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-3 shadow">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bookingReviewLabel">Booking Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div><strong>Name:</strong> <span id="bk_name"></span></div>
+          <div><strong>College:</strong> <span id="bk_college"></span></div>
+          <div><strong>Date:</strong> <span id="bk_date"></span></div>
+          <div><strong>PC:</strong> <span id="bk_pc"></span></div>
+        </div>
+        <div class="modal-footer">
+          <a id="bk_accept" class="btn btn-success" href="#">Accept</a>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FACULTY BOOKINGS CONTENT ===== -->
+  <div id="faculty-bookings" hidden>
+    <div class="nav nav-tabs subtabs">
+      <button id="tab-faculty-all" class="nav-link active subtab">All</button>
+      <button id="tab-faculty-pending" class="nav-link subtab position-relative">
+        {% if faculty_pending_count %}
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+          {{faculty_pending_count}}
+        </span>
+        {% endif %}
+        Pending
+      </button>
+      <button id="tab-faculty-approved" class="nav-link subtab">Approved</button>
+    </div>
+
+    <div id="faculty-all" class="subcontent">
+      <table class="table">
+        <head>
+          <tr>
+            <th colspan="5">Faculty Bookings</th>
+          </tr>
+          <tr>
+            <th>Requester</th>
+            <th>Start</th>
+            <th>End</th>
+            <th># of PC</th>
+            <th>Status</th>
+          </tr>
+        </head>
+        <tbody>
+          {% for booking in faculty_bookings %}
+          <tr>
+            <td>{{ booking.faculty.get_full_name }}</td>
+            <td>{{ booking.start_datetime }}</td>
+            <td>{{ booking.end_datetime }}</td>
+            <td>{{ booking.num_of_devices }}</td>
+            <td>{{ booking.status }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div id="faculty-pending" class="subcontent" hidden>
+      <table class="table">
+        <head>
+          <tr>
+            <th colspan="5">Faculty Bookings</th>
+          </tr>
+          <tr>
+            <th>Requester</th>
+            <th>Start</th>
+            <th>End</th>
+            <th># of PC</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </head>
+        <tbody>
+          {% for booking in faculty_pending_approvals %}
+          <tr>
+            <td>{{ booking.faculty.get_full_name }}</td>
+            <td>{{ booking.start_datetime }}</td>
+            <td>{{ booking.end_datetime }}</td>
+            <td>{{ booking.num_of_devices }}</td>
+            <td>{{ booking.status }}</td>
+            <td>
+              <a href="{% url 'main_app:block-reservation-approval' pk=booking.pk %}" class="btn btn-sm btn-outline-secondary">
+                review
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div id="faculty-approved" class="subcontent" hidden>
+      <table class="table">
+        <head>
+          <tr>
+            <th colspan="5">Faculty Bookings</th>
+          </tr>
+          <tr>
+            <th>Requester</th>
+            <th>Start</th>
+            <th>End</th>
+            <th># of PC</th>
+            <th>Status</th>
+          </tr>
+        </head>
+        <tbody>
+          {% for booking in faculty_approved_bookings %}
+          <tr>
+            <td>{{ booking.faculty.get_full_name }}</td>
+            <td>{{ booking.start_datetime }}</td>
+            <td>{{ booking.end_datetime }}</td>
+            <td>{{ booking.num_of_devices }}</td>
+            <td>{{ booking.status }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Bookings page loaded');
+  
+  // === Generic Tab Switcher (Vanilla JS) ===
+  function initTabGroup(tabSelectors, contentSelectors) {
+    const tabs = document.querySelectorAll(tabSelectors);
+    const contents = document.querySelectorAll(contentSelectors);
+    
+    tabs.forEach(function(tab, index) {
+      tab.addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log('Tab clicked:', tab.id, 'index:', index);
+        
+        // Switch active tab
+        tabs.forEach(function(t) {
+          t.classList.remove('active');
+        });
+        tab.classList.add('active');
+        
+        // Switch content
+        contents.forEach(function(c) {
+          c.hidden = true;
+        });
+        if (contents[index]) {
+          contents[index].hidden = false;
+          console.log('Showing content:', contents[index].id);
+        }
+      });
+    });
+  }
+
+  // === Main Tabs ===
+  initTabGroup("#tab-student-bookings, #tab-faculty-bookings", "#student-bookings, #faculty-bookings");
+
+  // === Subtabs: Student Bookings ===
+  initTabGroup("#tab-student-all, #tab-student-pending, #tab-student-approved", "#student-all, #student-pending, #student-approved");
+
+  // === Subtabs: Faculty Bookings ===
+  initTabGroup("#tab-faculty-all, #tab-faculty-pending, #tab-faculty-approved", "#faculty-all, #faculty-pending, #faculty-approved");
+
+  // Review button -> show modal with details; do NOT auto-accept
+  document.addEventListener('click', function(e){
+    var target = e.target;
+    if (target && target.classList.contains('review-booking')) {
+      e.preventDefault();
+      e.stopPropagation();
+      var name = target.getAttribute('data-name') || '';
+      var college = target.getAttribute('data-college') || '';
+      var date = target.getAttribute('data-date') || '';
+      var pc = target.getAttribute('data-pc') || '-';
+      var acceptUrl = target.getAttribute('data-accept-url') || '#';
+      document.getElementById('bk_name').textContent = name;
+      document.getElementById('bk_college').textContent = college;
+      document.getElementById('bk_date').textContent = date;
+      document.getElementById('bk_pc').textContent = pc;
+      document.getElementById('bk_accept').setAttribute('href', acceptUrl);
+      var modalEl = document.getElementById('bookingReviewModal');
+      if (modalEl) {
+        var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

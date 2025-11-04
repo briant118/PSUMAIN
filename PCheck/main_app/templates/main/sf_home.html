@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Student/Faculty Home{% endblock %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'css/booking.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+  <div class="card col-md-8 offset-md-2 shadow-lg mb-5 bg-body rounded-bottom rounded-5">
+    <div class="text-center card-title">
+      <div class="p-4 bg-warning rounded-bottom rounded-5"></div>
+    </div>
+    <div class="card-body p-5"> <!-- Card body -->
+      <div class="text-center">
+        <h2>Real-Time PC Availability Checker</h2>
+        <p class="fs-small">Find available PC in seconds</p>
+      </div>
+      <div class="text-center mt-5 mb-5">
+        <a href="{% url 'main_app:pc-reservation' %}" class="btn btn-lg btn-warning">Check available PCs</a>
+      </div>
+    </div> <!-- end of card-body -->
+  </div> <!-- end of card -->
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/reserve_pc.js' %}"></script>
+<script>
+$(document).ready(function() {
+    // Automatically call Django function on page load
+    $.ajax({
+        url: "{% url 'main_app:clearup_pcs' %}",
+        method: "GET",
+        success: function(response) {
+            console.log("Django response:", response.message);
+        },
+        error: function(xhr, status, error) {
+            console.error("Error calling Django function:", error);
+        }
+    });
+});
+</script>
+{% endblock %}

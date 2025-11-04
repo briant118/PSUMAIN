@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}PC detail{% endblock %}
+
+{% block content %}
+<div class="container col-md-4">
+  <div class="header text-center mt-5">
+    <h2>PC Detail View</h2>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-bordered table-condensed table-sm mt-3">
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="bg-light">Name</td>
+          <td>{{ pc.name }}</td>
+        </tr>
+        <tr>
+          <td class="bg-light">IP Address</td>
+          <td>{{ pc.ip_address }}</td>
+        </tr>
+        <tr>
+          <td class="bg-light">Status</td>
+          <td>{{ pc.status }}</td>
+        </tr>
+        <tr>
+          <td class="bg-light">Health</td>
+          <td>{{ pc.health }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="mt-3">
+    <a href="{% url 'main_app:pc-update' pk=pc.pk %}" class="btn btn-warning">edit</a>
+    <a href="{% url 'main_app:delete-pc' pk=pc.pk %}" class="btn btn-danger">delete</a>
+  </div>
+</div>
+{% endblock %}

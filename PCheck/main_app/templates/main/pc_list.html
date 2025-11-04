@@ -1,0 +1,514 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}PC List{% endblock %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'css/booking.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="text-center mb-3">
+    <h1>Computer Management</h1>
+  </div>
+
+  <div class="row">
+
+    <!-- Left Column -->
+    <div class="col-md-3 col-sm-4 mt-3">
+      <div class="card h-100">
+        <div class="card-header text-center">
+          <a href="{% url 'main_app:pc-list' %}" 
+            id="all-pc-button" class="btn btn-round btn-secondary shadow menu-button mb-2">
+            All PC
+          </a>
+          <br>
+          <button id="addPCbutton" class="btn btn-round btn-secondary shadow menu-button mb-2" onclick="console.log('Add PC clicked via onclick'); document.getElementById('PCformDiv').removeAttribute('hidden');">
+            Add PC
+          </button>
+          <br>
+          <a href="{% url 'main_app:pc-list' %}?filter=repair" 
+            id="repair-button" class="btn btn-round btn-secondary shadow menu-button mb-2">
+            Repair
+          </a>
+        </div>
+
+        <div class="card-body" id="PCformDiv" hidden>
+          <h5 id="form-title">Add a PC</h5>
+          <form method="post" id="pc-form" action="">
+            {% csrf_token %}
+            <input type="hidden" name="pc_id" id="pc_id">
+            <div class="form-group mt-3">
+              <label for="id_name">Name:</label>
+              <input type="text" name="name" id="id_name" class="form-control" required>
+              <span class="text-danger" id="name-error"></span>
+            </div>
+            <div class="form-group mt-3">
+              <label for="id_ip_address">IP Address:</label>
+              <input type="text" name="ip_address" id="id_ip_address" class="form-control" required>
+              <span class="text-danger" id="ip-address-error"></span>
+            </div>
+            <div class="form-group mt-3" style="display: none;">
+              <label for="id_status">Status:</label>
+              <select name="status" id="id_status" class="form-control select">
+                <option value="connected">Connected</option>
+                <option value="disconnected">Disconnected</option>
+              </select>
+            </div>
+            <div class="form-group mt-3">
+              <label for="id_system_condition">System Condition:</label>
+              <select name="system_condition" id="id_system_condition" class="form-control select" required>
+                <option value="active" selected>Active</option>
+                <option value="repair">Repair</option>
+              </select>
+            </div>
+            <div class="mt-3">
+              <p class="mt-1">Network Status: <span id="status_indicator"></span></p>
+              <div id="spinner" style="display: none; text-align:center; margin-top:20px;">
+                <div class="loader"></div>
+                <p>Connecting...</p>
+              </div>
+            </div>
+            <div class="mt-3">
+              <button type="button" id="connectButton" class="btn btn-sm btn-secondary w-100 mb-2" onclick="console.log('Test Connection clicked'); var ip=document.getElementById('id_ip_address').value; if(ip){fetch('/ajax/get-ping-data/?ip_address='+ip).then(r=>r.json()).then(d=>{console.log('Result:',d); var indicator=document.getElementById('status_indicator'); if(d.result){indicator.textContent='Reachable'; indicator.className='text-success'; document.getElementById('id_status').value='connected';} else{indicator.textContent='Unreachable'; indicator.className='text-danger'; document.getElementById('id_status').value='disconnected';}}).catch(e=>console.error('Error:',e));} else{alert('Please enter an IP address');}">
+                Test Connection
+              </button>
+              <div class="d-flex">
+                <button type="submit" class="btn btn-sm btn-primary flex-fill me-2" id="save-button" onclick="console.log('Save clicked')">Save</button>
+                <button type="button" id="cancel-button" style="display:none;" class="btn btn-sm btn-secondary flex-fill" onclick="console.log('Cancel clicked'); document.getElementById('PCformDiv').setAttribute('hidden','');">Cancel</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-md-9 col-sm-8 mt-3">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Available Computers</h5>
+          <div>
+            <button type="button" class="btn btn-sm btn-secondary" id="view-toggle-btn" onclick="toggleView()">
+              <i class="fa-solid fa-table"></i> Table View
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Button Grid View -->
+          <div id="button-view" class="row justify-content-center text-center">
+            {% for pc in pc_list %}
+            <div class="col-3 col-md-2 col-sm-3 mb-3">
+              <div class="pc-container position-relative">
+                <button class="pc-list-button {% if pc.system_condition == 'repair' %}pc-repair{% else %}{% if pc.status == 'connected' %}text-success{% else %}text-danger{% endif %}{% endif %}" 
+                  data-pc-id="{{ pc.pk }}" 
+                  data-pc-name="{{ pc.name }}"
+                  data-pc-ip="{{ pc.ip_address }}"
+                  data-pc-status="{{ pc.status }}"
+                  data-pc-health="{{ pc.system_condition }}">
+                  <i class="fa-solid fa-desktop" style="font-size: 1.7em; display: inline-block;"></i><br>
+                  <span class="pc-name">{{ pc.name }}</span>
+                  <div class="pc-status-indicator mt-1">
+                    {% if pc.system_condition == 'repair' %}
+                      <span class="badge text-bg-danger">Repair</span>
+                    {% else %}
+                      {% if pc.status == 'connected' %}
+                        <i class="fa-solid fa-circle text-success" style="font-size: 0.7em;"></i>
+                      {% else %}
+                        <i class="fa-solid fa-circle text-danger" style="font-size: 0.7em;"></i>
+                      {% endif %}
+                    {% endif %}
+                  </div>
+                </button>
+                <a class="btn btn-sm text-danger delete-pc-btn position-absolute top-0 end-0" 
+                  href="{% url 'main_app:delete-pc' pk=pc.pk %}" 
+                  title="Delete PC" 
+                  style="padding: 2px 5px; font-size: 0.7em; z-index: 10;"
+                  onclick="event.stopPropagation(); return confirm('Are you sure you want to delete {{ pc.name }}?');">
+                  <i class="fa-solid fa-trash"></i>
+                </a>
+              </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+              <p class="text-muted">No PCs found.</p>
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- Table View -->
+          <div id="table-view" style="display: none;">
+            <table class="table table-striped table-hover table-sm">
+              <thead class="thead-dark">
+                <tr>
+                  <th>PCs</th>
+                  <th>IP Address</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for pc in pc_list %}
+                <tr class="edit-row" data-pc-id="{{ pc.pk }}" data-name="{{ pc.name }}" 
+                  data-ip="{{ pc.ip_address }}" data-status="{{ pc.status }}" data-health="{{ pc.system_condition }}">
+                  <td>{{ pc.name }}</td>
+                  <td>{{ pc.ip_address }}</td>
+                  <td>
+                    {% if pc.status == 'connected' %}
+                      <i class="fa-solid fa-circle text-success"></i>
+                    {% else %}
+                      <i class="fa-solid fa-circle text-danger"></i>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <a class="btn text-danger delete-pc-link" href="{% url 'main_app:delete-pc' pk=pc.pk %}" title="delete PC" onclick="event.stopPropagation();">
+                      <i class="fa-solid fa-trash"></i>
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PC Information Modal -->
+<div class="modal fade" id="pcInfoModal" tabindex="-1" aria-labelledby="pcInfoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="pcInfoModalLabel">
+          <i class="fa-solid fa-desktop"></i> PC Information
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-bordered">
+          <tbody>
+            <tr>
+              <td class="bg-light fw-bold" style="width: 40%;">PC Name:</td>
+              <td id="modal-pc-name">-</td>
+            </tr>
+            <tr>
+              <td class="bg-light fw-bold">IP Address:</td>
+              <td id="modal-pc-ip">-</td>
+            </tr>
+            <tr>
+              <td class="bg-light fw-bold">Status:</td>
+              <td id="modal-pc-status">
+                <span id="modal-status-badge" class="badge">-</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="bg-light fw-bold">System Condition:</td>
+              <td id="modal-pc-health">
+                <span id="modal-health-badge" class="badge">-</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="modal-edit-btn">Edit PC</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Function to show PC info modal (vanilla JS version)
+function showPCInfoModalVanilla(id, name, ip, status, health) {
+  console.log("Showing PC Info Modal (Vanilla JS):", { id, name, ip, status, health });
+  
+  // Set modal content
+  var modalName = document.getElementById('modal-pc-name');
+  var modalIP = document.getElementById('modal-pc-ip');
+  var statusBadge = document.getElementById('modal-status-badge');
+  var healthBadge = document.getElementById('modal-health-badge');
+  
+  if (modalName) modalName.textContent = name || "-";
+  if (modalIP) modalIP.textContent = ip || "-";
+  
+  // Set status badge
+  if (statusBadge) {
+    statusBadge.className = 'badge';
+    if (status === "connected") {
+      statusBadge.textContent = "Connected";
+      statusBadge.classList.add("bg-success");
+    } else {
+      statusBadge.textContent = "Disconnected";
+      statusBadge.classList.add("bg-danger");
+    }
+  }
+  
+  // Set health badge
+  if (healthBadge) {
+    healthBadge.className = 'badge';
+    if (health === "active") {
+      healthBadge.textContent = "Active";
+      healthBadge.classList.add("bg-success");
+    } else if (health === "repair") {
+      healthBadge.textContent = "Repair";
+      healthBadge.classList.add("bg-warning");
+    } else {
+      healthBadge.textContent = health || "-";
+    }
+  }
+  
+  // Set edit button handler
+  var editBtn = document.getElementById('modal-edit-btn');
+  if (editBtn) {
+    editBtn.onclick = function() {
+      fillPCFormVanilla(id, name, ip, status, health);
+      var modalElement = document.getElementById("pcInfoModal");
+      if (window.bootstrap && modalElement) {
+        var modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) modal.hide();
+      }
+    };
+  }
+  
+  // Show modal using Bootstrap 5
+  var modalElement = document.getElementById("pcInfoModal");
+  if (modalElement && window.bootstrap) {
+    var existingModal = bootstrap.Modal.getInstance(modalElement);
+    if (existingModal) {
+      existingModal.show();
+    } else {
+      var modal = new bootstrap.Modal(modalElement, {
+        backdrop: true,
+        keyboard: true,
+        focus: true
+      });
+      modal.show();
+    }
+  }
+}
+
+// Function to fill PC form (vanilla JS version)
+function fillPCFormVanilla(id, name, ip, status, health) {
+  var formDiv = document.getElementById('PCformDiv');
+  if (formDiv) {
+    formDiv.removeAttribute('hidden');
+    // Scroll to form panel smoothly
+    setTimeout(function() {
+      formDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+  }
+  
+  var pcIdField = document.getElementById('pc_id');
+  var nameField = document.getElementById('id_name');
+  var ipField = document.getElementById('id_ip_address');
+  var statusField = document.getElementById('id_status');
+  var healthField = document.getElementById('id_system_condition');
+  var statusIndicator = document.getElementById('status_indicator');
+  
+  if (pcIdField) pcIdField.value = id || "";
+  if (nameField) nameField.value = name || "";
+  if (ipField) ipField.value = ip || "";
+  if (statusField) statusField.value = status || "connected";
+  if (healthField) healthField.value = health || "active";
+  if (statusIndicator) statusIndicator.textContent = "";
+  
+  var formTitle = document.getElementById('form-title');
+  if (formTitle) formTitle.textContent = "Edit PC";
+  
+  var cancelButton = document.getElementById('cancel-button');
+  if (cancelButton) cancelButton.style.display = "block";
+}
+
+// Emergency fallback if jQuery doesn't work
+document.addEventListener('DOMContentLoaded', function() {
+  console.log("DOM loaded without jQuery");
+  var addButton = document.getElementById('addPCbutton');
+  if (addButton) {
+    console.log("Add button found with vanilla JS");
+    addButton.addEventListener('click', function() {
+      console.log("Add PC clicked (vanilla JS)");
+      var formDiv = document.getElementById('PCformDiv');
+      if (formDiv) {
+        formDiv.removeAttribute('hidden');
+      }
+    });
+  } else {
+    console.log("Add button NOT found");
+  }
+  
+  // Add vanilla JS click handlers for PC buttons (button view)
+  var pcButtons = document.querySelectorAll('.pc-list-button');
+  console.log("Found", pcButtons.length, "PC buttons");
+  pcButtons.forEach(function(button) {
+    button.addEventListener('click', function(e) {
+      // Don't trigger if clicking on delete button
+      if (e.target.closest('.delete-pc-btn')) {
+        console.log("Delete button clicked, ignoring button click");
+        return;
+      }
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      var id = button.getAttribute('data-pc-id');
+      var name = button.getAttribute('data-pc-name');
+      var ip = button.getAttribute('data-pc-ip');
+      var status = button.getAttribute('data-pc-status');
+      var health = button.getAttribute('data-pc-health');
+      
+      console.log("PC list button clicked (vanilla JS):", id, name);
+      
+      // Fill the form fields for editing (show info in side panel)
+      fillPCFormVanilla(id, name, ip, status, health);
+      
+      // Highlight selected button
+      pcButtons.forEach(function(btn) {
+        btn.classList.remove('selected-pc');
+      });
+      button.classList.add('selected-pc');
+    });
+  });
+  
+  // Add vanilla JS click handlers for table rows
+  var tableRows = document.querySelectorAll('.edit-row');
+  console.log("Found", tableRows.length, "table rows");
+  tableRows.forEach(function(row) {
+    row.addEventListener('click', function(e) {
+      // Don't trigger if clicking on delete button
+      if (e.target.closest('.delete-pc-link')) {
+        console.log("Delete link clicked, ignoring row click");
+        return;
+      }
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      var id = row.getAttribute('data-pc-id');
+      var name = row.getAttribute('data-name');
+      var ip = row.getAttribute('data-ip');
+      var status = row.getAttribute('data-status');
+      var health = row.getAttribute('data-health');
+      
+      console.log("Edit row clicked (vanilla JS):", id, name);
+      
+      // Fill the form fields for editing (show info in side panel)
+      fillPCFormVanilla(id, name, ip, status, health);
+    });
+  });
+});
+
+// Function to attach click handlers (call this after toggle)
+function attachClickHandlers() {
+  // Add vanilla JS click handlers for table rows (in case they're now visible)
+  var tableRows = document.querySelectorAll('.edit-row');
+  tableRows.forEach(function(row) {
+    // Check if handler already attached
+    if (row.hasAttribute('data-handler-attached')) {
+      return;
+    }
+    row.setAttribute('data-handler-attached', 'true');
+    
+    row.addEventListener('click', function(e) {
+      // Don't trigger if clicking on delete button
+      if (e.target.closest('.delete-pc-link')) {
+        console.log("Delete link clicked, ignoring row click");
+        return;
+      }
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      var id = row.getAttribute('data-pc-id');
+      var name = row.getAttribute('data-name');
+      var ip = row.getAttribute('data-ip');
+      var status = row.getAttribute('data-status');
+      var health = row.getAttribute('data-health');
+      
+      console.log("Edit row clicked (vanilla JS):", id, name);
+      
+      // Fill the form fields for editing (show info in side panel)
+      fillPCFormVanilla(id, name, ip, status, health);
+    });
+  });
+}
+
+// Toggle between button view and table view
+function toggleView() {
+  var buttonView = document.getElementById('button-view');
+  var tableView = document.getElementById('table-view');
+  var toggleBtn = document.getElementById('view-toggle-btn');
+  
+  if (buttonView.style.display === 'none') {
+    buttonView.style.display = 'block';
+    tableView.style.display = 'none';
+    toggleBtn.innerHTML = '<i class="fa-solid fa-table"></i> Table View';
+  } else {
+    buttonView.style.display = 'none';
+    tableView.style.display = 'block';
+    toggleBtn.innerHTML = '<i class="fa-solid fa-th"></i> Button View';
+    // Reattach handlers when table view is shown
+    setTimeout(attachClickHandlers, 100);
+  }
+}
+
+// Handle PC button click - Fallback function (jQuery handler is in pc_management.js)
+function selectPCFromButton(button) {
+  var pcId = button.getAttribute('data-pc-id');
+  var name = button.getAttribute('data-pc-name');
+  var ip = button.getAttribute('data-pc-ip');
+  var status = button.getAttribute('data-pc-status');
+  var health = button.getAttribute('data-pc-health');
+  
+  console.log('PC button clicked (vanilla JS):', pcId, name);
+  
+  // Fill the form fields
+  var formDiv = document.getElementById('PCformDiv');
+  var statusIndicator = document.getElementById('status_indicator');
+  
+  if (formDiv) formDiv.removeAttribute('hidden');
+  if (statusIndicator) statusIndicator.textContent = '';
+  
+  var pcIdField = document.getElementById('pc_id');
+  var nameField = document.getElementById('id_name');
+  var ipField = document.getElementById('id_ip_address');
+  var statusField = document.getElementById('id_status');
+  var healthField = document.getElementById('id_system_condition');
+  
+  if (pcIdField) pcIdField.value = pcId || '';
+  if (nameField) nameField.value = name || '';
+  if (ipField) ipField.value = ip || '';
+  if (statusField) statusField.value = status || 'connected';
+  if (healthField) healthField.value = health || 'active';
+  
+  // Change title & button
+  var formTitle = document.getElementById('form-title');
+  if (formTitle) formTitle.textContent = 'Edit PC';
+  
+  var cancelButton = document.getElementById('cancel-button');
+  if (cancelButton) cancelButton.style.display = 'block';
+  
+  var addPCbutton = document.getElementById('addPCbutton');
+  if (addPCbutton) {
+    addPCbutton.className = 'btn btn-round btn-secondary shadow menu-button mb-2';
+    addPCbutton.classList.remove('bg-warning');
+  }
+  
+  // Highlight selected button
+  var allButtons = document.querySelectorAll('.pc-list-button');
+  allButtons.forEach(function(btn) {
+    btn.classList.remove('selected-pc');
+  });
+  button.classList.add('selected-pc');
+}
+</script>
+<script src="{% static 'js/pc_management.js' %}"></script>
+{% endblock %}

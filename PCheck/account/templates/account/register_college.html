@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Enter College Details{% endblock %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'css/mystyle.css' %}">
+<style>
+.user-class-button {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: orange;
+    cursor: pointer;
+    margin-bottom: 1em;
+    color: black;
+    width: 7em;
+    height: 7em;
+    font-size: large;
+}
+
+.next-button {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: orange;
+    cursor: pointer;
+    margin-top: 3em;
+    margin-bottom: 1em;
+    color: black;
+    width: 80%;
+    font-size: large;
+}
+
+button:hover {
+    background: #f3eea8;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5 rounded">
+  <div class="card col-md-6 offset-md-3 border rounded shadow-lg mb-5 bg-body">
+    <div class="text-center card-body bg-warning mb-3">
+      <h1>Hello, <br>Create your account</h1>
+    </div>
+    <div class="form-section card-body p-4">
+      <form method="post" action="{% url 'account:register_email' %}">
+        {% csrf_token %}
+        
+        <!-- Hidden fields to pass role -->
+        <input type="hidden" name="role" value="{{ role }}">
+        
+        <div>
+          <h3>Enter your college details</h3>
+          <div class="d-flex mb-2" style="max-width: auto;">
+            <input type="text" name="first_name" placeholder="First Name" required class="form-control" style="margin-right: 1em;">
+            <input type="text" name="last_name" placeholder="Last Name" required class="form-control">
+          </div>
+          <select name="college" required class="form-control select mb-2">
+            <option value="">-- Select College --</option>
+            {% for college in colleges %}
+            <option value="{{ college.id }}">{{ college.name }}</option>
+            {% endfor %}
+          </select>
+          <input type="text" name="course" placeholder="Course Name" required class="form-control mb-2">
+          <input type="text" name="year" placeholder="Year" required class="form-control mb-2">
+          <input type="text" name="block" placeholder="Block (e.g., 2A)" required class="form-control mb-2">
+          <div class="text-center">
+            <button type="submit" class="next-button">Next</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

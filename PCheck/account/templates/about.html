@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}About{% endblock %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'css/booking.css' %}?v=9">
+{% endblock %}
+
+{% block content %}
+<div class="about-container">
+  <div id="about-logo" class="text-center mt-5 pt-5">
+    <img src="{% static 'images/about_logo.png' %}" alt="About Logo" class="img-fluid">
+  </div>
+  <div id="about-section" class="container mt-5 pt-5 ps-10 pe-10 pb-5 rounded">
+    <p>
+      The Real_time PC Availability Checker is a web-based application designed to improve the
+      efficiency and accessibility of computer resources at Palawan State University's ICT Building. 
+      The system provides real-time information on avaiable PCs, allows users to book computers in advance, 
+      and ensures efficient resource allocation through QR code verification and expiration timers.
+    </p>
+    <h3 class="text-center">How to Use the System</h3>
+    <ol>
+      <li>Check availability: Visit the homepage and view the list of available PCs.</li>
+      <li>Book a PC: Select a PC and book it for your desired time. You will receive a QR code.</li>
+      <li>Go to the ICT Building: Proceed to the ICT Building and Scan the QR code at desk info.</li>
+      <li>Use the PC: You can now enjoy using the PC.</li>
+    </ol>
+  </div>
+</div>
+{% endblock %}

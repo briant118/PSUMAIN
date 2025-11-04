@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create an account{% endblock %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'css/mystyle.css' %}">
+<style>
+.loader {
+    border: 6px solid #f3f3f3; /* Light gray */
+    border-top: 6px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.menu-button {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: none;
+    padding: 0.5em 1em;
+    cursor: pointer;
+    margin-bottom: 1em;
+    color: black;
+}
+
+.user-class-button {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: orange;
+    cursor: pointer;
+    margin-bottom: 1em;
+    color: black;
+    width: 7em;
+    height: 7em;
+    font-size: large;
+}
+
+.next-button {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: orange;
+    cursor: pointer;
+    margin-top: 3em;
+    margin-bottom: 1em;
+    color: black;
+    width: 80%;
+    font-size: large;
+}
+
+button:hover {
+    background: #f3eea8;
+}
+
+.step {
+      display: none;
+      margin-bottom: 20px;
+}
+
+.active {
+    display: block;
+}
+
+.otp {
+    margin-right: 0.5em;
+    margin-bottom: 1em;
+    width: 3em;
+    text-align: center;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5 rounded">
+  <div class="card col-md-6 offset-md-3 border rounded shadow-lg mb-5 bg-body">
+    <div class="text-center card-body bg-warning mb-3">
+      <h1>Hello, <br>Create your account</h1>
+    </div>
+    <div class="form-section card-body p-4">
+      <form id="registrationForm" method="post">
+        {% csrf_token %}
+        <!-- Step 1: Role -->
+        <div class="step active" id="step1">
+          <h3>Select your role</h3>
+          <br>
+          <div class="text-center">
+            <button type="button" class="next user-class-button" data-next="step2" data-role="student" onclick="document.getElementById('role').value='student'; document.getElementById('step1').classList.remove('active'); document.getElementById('step2').classList.add('active'); document.getElementById('student-fields').style.display='block'; console.log('Student selected');">Student</button>
+            &nbsp;&nbsp;
+            <button type="button" class="next user-class-button" data-next="step2" data-role="faculty" onclick="document.getElementById('role').value='faculty'; document.getElementById('step1').classList.remove('active'); document.getElementById('step2').classList.add('active'); document.getElementById('student-fields').style.display='none'; console.log('Faculty selected');">Faculty</button>
+          </div>
+          <input type="hidden" name="role" id="role">
+        </div>
+
+        <!-- Step 2: Name -->
+        <div class="step" id="step2">
+          <h3>Enter your name</h3>
+          <div class="d-flex mb-2" style="max-width: auto;">
+            <input type="text" name="first_name" placeholder="First Name" required class="form-control" style="margin-right: 1em;">
+            <input type="text" name="last_name" placeholder="Last Name" required class="form-control">
+          </div>
+          <div class="text-center">
+            <button type="button" class="next next-button" data-next="step3" onclick="console.log('Next to step3'); document.getElementById('step2').classList.remove('active'); document.getElementById('step3').classList.add('active');">Next</button>
+          </div>
+        </div>
+
+        <!-- Step 3: College Info -->
+        <div class="step" id="step3">
+          <h3>Select your college</h3>
+          <select name="college" required class="form-control select mb-2">
+            <option value="">-- Select College --</option>
+            {% for college in colleges %}
+            <option value="{{ college.id }}">{{ college.name }}</option>
+            {% endfor %}
+          </select>
+          
+          <!-- Student only fields -->
+          <div id="student-fields">
+            <input type="text" name="course" placeholder="Course Name" class="form-control mb-2">
+            <input type="text" name="year" placeholder="Year" class="form-control mb-2">
+            <input type="text" name="block" placeholder="Block (e.g., 2A)" class="form-control mb-2">
+          </div>
+          
+          <div class="text-center">
+            <button type="button" class="next next-button" data-next="step4" onclick="console.log('Next to step4'); document.getElementById('step3').classList.remove('active'); document.getElementById('step4').classList.add('active');">Next</button>
+          </div>
+        </div>
+
+        <!-- Step 4: Email -->
+        <div class="step" id="step4">
+          <h3>Enter your email</h3>
+          <div class="d-flex" style="max-width: 500px;">
+            <input type="text" id="email_prefix" name="email_prefix"
+              placeholder="Email Address Prefix" required class="form-control me-2"
+              pattern="[A-Za-z0-9]+" title="Only letters and numbers are allowed">
+            <input type="text" id="email_domain" value="@psu.palawan.edu.ph" disabled class="form-control" style="max-width: 220px;">
+          </div>
+          <input type="hidden" name="email" id="email_full">
+          <div class="mt-2" style="max-width: auto;">
+            <input type="password" name="password" placeholder="Password" required class="form-control mb-2">
+            <input type="password" name="password2" placeholder="Re-enter password" required class="form-control mb-2">
+          </div>
+          <div class="text-center mt-1">
+            <button type="submit" class="next-button">Submit</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Load registration script after jQuery
+$(document).ready(function () {
+  console.log("Registration.js loaded");
+  
+  // Email validation regex
+  var regex = /^[a-zA-Z0-9]+$/;
+  
+  // Registration script
+  // Handle next button clicks
+  $(".next").click(function(){
+    console.log("Next button clicked");
+    var nextStep = $(this).data("next");
+    console.log("Next step:", nextStep);
+
+    // if role button clicked, set role value
+    if($(this).data("role")){
+      var role = $(this).data("role");
+      console.log("Role selected:", role);
+      $("#role").val(role);
+    }
+
+    $(this).closest(".step").removeClass("active");
+    $("#" + nextStep).addClass("active");
+    console.log("Step changed to:", nextStep);
+  });
+
+  // Handle form submit
+  $("#registrationForm").on("submit", function(e) {
+    // Validate email prefix
+    var prefix = $("#email_prefix").val().trim();
+    var domain = "@psu.palawan.edu.ph";
+
+    if (!regex.test(prefix)) {
+      alert("Email prefix must only contain letters and numbers (no @ or .).");
+      e.preventDefault();
+      return false;
+    }
+
+    // Validate password match
+    var password = $('input[name="password"]').val();
+    var password2 = $('input[name="password2"]').val();
+    
+    if (password !== password2) {
+      alert("Passwords do not match. Please re-enter your password.");
+      e.preventDefault();
+      return false;
+    }
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,403 @@
+/* Modern Design - Matching Image */
+
+/* Main Background - Orange to Reddish-Orange Gradient */
+body {
+    background: linear-gradient(180deg, #ff9800 0%, #ff5722 100%);
+    min-height: 100vh;
+}
+
+.wrapper {
+    background: linear-gradient(180deg, #ff9800 0%, #ff5722 100%);
+    min-height: 100vh;
+}
+
+.main-content {
+    background: linear-gradient(180deg, #ff9800 0%, #ff5722 100%);
+    min-height: 100vh;
+}
+
+/* White Card Container */
+.mobile-reservation-container {
+    padding: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    background: transparent;
+}
+
+.reservation-card {
+    background-color: #ffffff;
+    border-radius: 24px;
+    padding: 0;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+/* Gradient Header Section */
+.reservation-header {
+    background: linear-gradient(90deg, #ff9800 0%, #ffc107 100%);
+    padding: 1.5rem 1.25rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: none;
+}
+
+.reservation-title {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: #ffffff; /* White for better readability on orange gradient */
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    text-transform: none;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.reservation-datetime {
+    font-size: 0.9rem;
+    color: #424242;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+/* Body Content */
+.reservation-body {
+    padding: 1.5rem;
+    background-color: #ffffff;
+    color: #424242;
+}
+
+/* PC Grid */
+.pc-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+    margin: 1rem 0;
+    padding: 0;
+    justify-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 576px) {
+    .pc-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+    }
+}
+
+.pc-item {
+    width: 100%;
+}
+
+.pc-button-modern {
+    background-color: #ffffff;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: all 0.2s;
+}
+
+.pc-button-modern:hover:not(:disabled) {
+    border-color: #ff9800;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+}
+
+.pc-button-modern:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pc-icon-modern {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    color: #424242;
+}
+
+.pc-number {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #424242;
+}
+
+/* PC Status Colors */
+.pc-available {
+    background-color: #ffffff;
+    border-color: #4caf50;
+}
+
+.pc-available .pc-icon-modern,
+.pc-available .pc-number {
+    color: #4caf50;
+}
+
+.pc-selected {
+    background-color: #20b2aa;
+    border-color: #20b2aa;
+}
+
+.pc-selected .pc-icon-modern,
+.pc-selected .pc-number {
+    color: #ffffff;
+}
+
+.pc-queue {
+    background-color: #808080;
+    border-color: #808080;
+}
+
+.pc-queue .pc-icon-modern,
+.pc-queue .pc-number {
+    color: #ffffff;
+}
+
+.pc-used {
+    background-color: #424242;
+    border-color: #424242;
+}
+
+.pc-used .pc-icon-modern,
+.pc-used .pc-number {
+    color: #ffffff;
+}
+
+.pc-repair {
+    background-color: #dc3545 !important; /* red for repair */
+    border-color: #dc3545 !important;
+}
+
+.pc-repair .pc-icon-modern,
+.pc-repair .pc-number {
+    color: #ffffff !important;
+}
+
+.pc-offline {
+    background-color: #6c757d; /* gray for offline */
+    border-color: #6c757d;
+}
+
+.pc-offline .pc-icon-modern,
+.pc-offline .pc-number {
+    color: #ffffff;
+}
+
+/* Ensure disabled repair buttons stay visibly red */
+.pc-button-modern.pc-repair:disabled {
+    opacity: 1 !important;
+    pointer-events: none;
+}
+
+/* Legends Section */
+.legends-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.legends-title {
+    font-size: 0.875rem;
+    font-weight: bold;
+    color: #424242;
+    margin-bottom: 0.75rem;
+}
+
+.legends-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.legend-icon {
+    width: 28px;
+    height: 28px;
+    border: 2px solid #424242;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background-color: #ffffff;
+}
+
+.legend-icon i {
+    font-size: 1rem;
+    color: #424242;
+}
+
+.legend-item.selected .legend-icon {
+    background-color: #20b2aa;
+    border-color: #20b2aa;
+}
+
+.legend-item.selected .legend-icon i {
+    color: #ffffff;
+}
+
+.legend-item.queue .legend-icon {
+    background-color: #808080;
+    border-color: #808080;
+}
+
+.legend-item.queue .legend-icon i {
+    color: #ffffff;
+}
+
+.legend-item.used .legend-icon {
+    background-color: #424242;
+    border-color: #424242;
+}
+
+.legend-item.used .legend-icon i {
+    color: #ffffff;
+}
+
+.legend-text {
+    font-size: 0.8rem;
+    color: #424242;
+    line-height: 1.4;
+}
+
+/* Pagination */
+.pagination-modern {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+}
+
+.pagination-info {
+    font-size: 0.9rem;
+    color: #424242;
+    font-weight: 500;
+}
+
+.pagination-arrow {
+    background-color: #ffffff;
+    border: 2px solid #ff9800;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+    color: #ff9800;
+    transition: all 0.2s;
+}
+
+.pagination-arrow:hover:not(.disabled) {
+    background-color: #ff9800;
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+.pagination-arrow.disabled,
+.pagination-arrow:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.pagination-modern > .pagination-arrow:first-child,
+.pagination-modern > .pagination-arrow.disabled:first-child {
+    display: none;
+}
+
+/* Next Button - Gradient */
+.next-button-modern {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: linear-gradient(90deg, #ff5722 0%, #ff9800 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #ffffff;
+    cursor: pointer;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
+    transition: all 0.2s;
+}
+
+.next-button-modern:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 87, 34, 0.4);
+}
+
+.next-button-modern:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.mobile-reservation-container {
+    padding-bottom: 100px;
+}
+
+/* About Page Styles */
+.about-container {
+    width: 100%;
+    background-color: #fdfdfd;
+    min-height: 100vh;
+    border-radius: 2%;
+}
+
+#about-section {
+    border-radius: 5%;
+    background-color: #fdfbfb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .reservation-card {
+        border-radius: 20px;
+    }
+    
+    .reservation-header {
+        padding: 1.25rem 1rem;
+    }
+    
+    .reservation-title {
+        font-size: 1.5rem;
+    }
+    
+    .reservation-body {
+        padding: 1.25rem;
+    }
+    
+    .next-button-modern {
+        bottom: 1rem;
+        right: 1rem;
+        padding: 0.875rem 1.5rem;
+        font-size: 0.9rem;
+    }
+}

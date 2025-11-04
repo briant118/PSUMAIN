@@ -1,0 +1,851 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" 
+      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/6e865f5ab0.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static 'css/mystyle.css' %}?v=9">
+    <!-- Make jQuery/Bootstrap available to any inline scripts rendered in content -->
+    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+    <script>
+      if (!window.jQuery) {
+        var jq = document.createElement('script');
+        jq.src = 'https://code.jquery.com/jquery-3.6.0.min.js';
+        jq.crossOrigin = 'anonymous';
+        document.head.appendChild(jq);
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+
+    {% block links %}
+    {% endblock %}
+  
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- Vertical Sidebar Navbar - Staff Only -->
+      {% if request.resolver_match.app_name != 'account' or request.resolver_match.url_name != 'login' %}
+      {% if request.user.is_authenticated and request.user.profile.role == 'staff' %}
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
+      <nav class="sidebar" id="sidebar">
+        <div class="sidebar-content">
+          <div class="sidebar-header">
+            <a class="sidebar-brand" href="{% if request.user.profile.role == 'staff' %}{% url 'main_app:dashboard' %}{% else %}{% url 'main_app:home' %}{% endif %}">
+              PCheck
+            </a>
+          </div>
+          
+          <div class="sidebar-menu">
+            {% if request.user.profile.role == "staff" %}
+            <ul class="sidebar-nav">
+              <li>
+                <a class="sidebar-link {% if request.resolver_match.app_name == 'main_app' and request.resolver_match.url_name == 'dashboard' %}active{% endif %}" 
+                  href="{% url 'main_app:dashboard' %}">
+                  <i class="fa-solid fa-house-chimney"></i> <span>Home</span>
+                </a>
+              </li>
+              <li>
+                <a class="sidebar-link {% if section == 'user' %}active{% endif %}" 
+                  href="{% url 'main_app:user-activities' %}">
+                  <i class="fa-solid fa-users"></i> <span>Users</span>
+                </a>
+              </li>
+              <li>
+                <a class="sidebar-link {% if section == 'pc_list' %}active{% endif %}" 
+                  href="{% url 'main_app:pc-list' %}">
+                  <i class="fa-solid fa-desktop"></i> <span>PCs</span>
+                </a>
+              </li>
+              <li>
+                <a class="sidebar-link {% if section == 'bookings' %}active{% endif %}" 
+                  href="{% url 'main_app:bookings' %}">
+                  <i class="fa-solid fa-calendar-check"></i> <span>Bookings</span>
+                </a>
+              </li>
+              <li class="sidebar-dropdown">
+                <a class="sidebar-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fa-solid fa-user"></i>
+                  <span>{{ request.user.first_name|default:request.user.username }}</span>
+                </a>
+                <ul class="dropdown-menu sidebar-dropdown-menu">
+                  <li><a class="dropdown-item sidebar-dropdown-item" href="{% url 'account:profile' %}"><i class="fa-solid fa-id-card"></i> Profile</a></li>
+                  <li><a class="dropdown-item sidebar-dropdown-item" href="{% url 'account:about' %}"><i class="fa-solid fa-info-circle"></i> About</a></li>
+                  <li><hr class="dropdown-divider sidebar-divider"></li>
+                  <li><a class="dropdown-item sidebar-dropdown-item" href="{% url 'account:logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                </ul>
+              </li>
+            </ul>
+            {% else %}
+            <ul class="sidebar-nav">
+              <li>
+                <a class="sidebar-link {% if request.resolver_match.app_name == 'main_app' and request.resolver_match.url_name == 'pc-reservation' %}active{% endif %}" 
+                  href="{% url 'main_app:pc-reservation' %}">
+                  <i class="fa-solid fa-house-chimney"></i> <span>Home</span>
+                </a>
+              </li>
+            </ul>
+            {% endif %}
+
+            {% if request.user.is_authenticated %}
+              {% if request.user.profile.role != "staff" %}
+              <ul class="sidebar-nav sidebar-bottom">
+                <li class="sidebar-dropdown">
+                  <a class="sidebar-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% if request.user.profile.profile_picture %}
+                      <img src="{{ request.user.profile.profile_picture.url }}" class="rounded-circle me-2" alt="Profile" style="width: 24px; height: 24px; object-fit: cover;">
+                    {% else %}
+                      <i class="fa-solid fa-user"></i>
+                    {% endif %}
+                    <span>{{ request.user.first_name|default:request.user.username }}</span>
+                  </a>
+                  <ul class="dropdown-menu sidebar-dropdown-menu">
+                    <li><a class="dropdown-item sidebar-dropdown-item" href="{% url 'account:profile' %}"><i class="fa-solid fa-id-card"></i> Profile</a></li>
+                    <li><a class="dropdown-item sidebar-dropdown-item" href="{% url 'main_app:chat' %}"><i class="fa-solid fa-comments"></i> Chat</a></li>
+                    <li><a class="dropdown-item sidebar-dropdown-item" href="{% url 'account:about' %}"><i class="fa-solid fa-info-circle"></i> About</a></li>
+                    <li><hr class="dropdown-divider sidebar-divider"></li>
+                    <li><a class="dropdown-item sidebar-dropdown-item" href="{% url 'account:logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                  </ul>
+                </li>
+              </ul>
+              {% elif request.user.profile.role == "staff" %}
+              <!-- QR Code Scanner -->
+              <div class="sidebar-qr-scanner">
+                <div class="qr-scanner-screen">
+                  <div id="qr-reader" class="qr-reader-container"></div>
+                  <div class="qr-placeholder" id="qr-placeholder">
+                    <div class="qr-pattern">
+                      <!-- Finder patterns -->
+                      <div class="qr-finder-pattern qr-top-left">
+                        <div class="qr-finder-outer"></div>
+                        <div class="qr-finder-inner"></div>
+                        <div class="qr-finder-center"></div>
+                      </div>
+                      <div class="qr-finder-pattern qr-top-right">
+                        <div class="qr-finder-outer"></div>
+                        <div class="qr-finder-inner"></div>
+                        <div class="qr-finder-center"></div>
+                      </div>
+                      <div class="qr-finder-pattern qr-bottom-left">
+                        <div class="qr-finder-outer"></div>
+                        <div class="qr-finder-inner"></div>
+                        <div class="qr-finder-center"></div>
+                      </div>
+                      <!-- Data modules -->
+                      <div class="qr-module qr-module-1"></div>
+                      <div class="qr-module qr-module-2"></div>
+                      <div class="qr-module qr-module-3"></div>
+                      <div class="qr-module qr-module-4"></div>
+                      <div class="qr-module qr-module-5"></div>
+                      <div class="qr-module qr-module-6"></div>
+                      <div class="qr-module qr-module-7"></div>
+                      <div class="qr-module qr-module-8"></div>
+                      <div class="qr-module qr-module-9"></div>
+                      <div class="qr-module qr-module-10"></div>
+                      <div class="qr-module qr-module-11"></div>
+                      <div class="qr-module qr-module-12"></div>
+                      <div class="qr-module qr-module-13"></div>
+                      <div class="qr-module qr-module-14"></div>
+                      <div class="qr-module qr-module-15"></div>
+                      <div class="qr-module qr-module-16"></div>
+                    </div>
+                  </div>
+                  <div class="qr-scanner-overlay" id="qr-overlay" style="display: none;">
+                    <div class="qr-scanner-frame"></div>
+                  </div>
+                  <div class="qr-scanner-status" id="qr-status">Ready to scan</div>
+                </div>
+                <div class="qr-placeholder-text">SCAN QR</div>
+                <div class="qr-scanner-controls">
+                  <button class="qr-scanner-btn" id="qr-start-btn" title="Start Scanner">
+                    <i class="fa-solid fa-qrcode"></i>
+                  </button>
+                  <button class="qr-scanner-btn" id="qr-stop-btn" title="Stop Scanner" style="display: none;">
+                    <i class="fa-solid fa-stop"></i>
+                  </button>
+                </div>
+                <div class="qr-scanner-result" id="qr-result" style="display: none;"></div>
+              </div>
+              {% endif %}
+            {% else %}
+            <ul class="sidebar-nav sidebar-bottom">
+              <li>
+                {% if request.resolver_match.app_name != 'account' and request.resolver_match.url_name != 'login' %}
+                <a class="sidebar-link" href="{% url 'account:login' %}">
+                  <i class="fa-solid fa-sign-in-alt"></i> <span>Login</span>
+                </a>
+                {% endif %}
+              </li>
+            </ul>
+            {% endif %}
+          </div>
+        </div>
+      </nav>
+      <!-- end of Sidebar -->
+      {% endif %}
+      {% endif %}
+
+      <!-- Main Content Area -->
+      <div class="main-content">
+        <!-- Mobile Header with Logo and Menu -->
+        {% if request.resolver_match.app_name != 'account' or request.resolver_match.url_name != 'login' %}
+        <div class="mobile-header d-lg-none">
+          <div class="mobile-header-left">
+            <a class="mobile-brand" href="{% if request.user.profile.role == 'staff' %}{% url 'main_app:dashboard' %}{% else %}{% url 'main_app:pc-reservation' %}{% endif %}">
+              <img src="{% static 'image/PSU_logo.png' %}" alt="PSU Logo" class="mobile-header-logo">
+              <div class="mobile-brand-text-container">
+                <span class="mobile-brand-text">Palawan State University</span>
+                <span class="mobile-brand-subtitle">Management Information System Office</span>
+              </div>
+            </a>
+          </div>
+          
+          <div class="mobile-header-right">
+            {% if request.user.is_authenticated and request.user.profile.role != 'staff' %}
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+            {% endif %}
+          </div>
+        </div>
+        
+        <!-- Mobile Navigation Menu -->
+        {% if request.user.is_authenticated and request.user.profile.role != 'staff' %}
+        <div class="mobile-nav-overlay" id="mobile-nav-overlay"></div>
+        <nav class="mobile-nav" id="mobile-nav">
+          <div class="mobile-nav-header">
+            <span class="mobile-nav-title">PCheck</span>
+            <button class="mobile-nav-close" id="mobile-nav-close" aria-label="Close menu">
+              <i class="fa-solid fa-times"></i>
+            </button>
+          </div>
+          <ul class="mobile-nav-menu">
+            <li>
+              <a href="{% url 'main_app:pc-reservation' %}" class="mobile-nav-item">
+                <i class="fa-solid fa-house-chimney"></i>
+                <span>Home</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'main_app:chat' %}" class="mobile-nav-item">
+                <i class="fa-solid fa-comments"></i>
+                <span>Chat</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'account:about' %}" class="mobile-nav-item">
+                <i class="fa-solid fa-info-circle"></i>
+                <span>About</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'account:profile' %}" class="mobile-nav-item">
+                <i class="fa-solid fa-id-card"></i>
+                <span>Profile</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'account:logout' %}" class="mobile-nav-item">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        {% endif %}
+        {% endif %}
+        
+        <!-- Desktop Header Section - Removed -->
+
+        {% if messages %}
+        <!-- Message Container -->
+        <div id="message-container" style="margin-top: 20px; margin-bottom: 20px;">
+          {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show text-center" 
+            role="alert" style="box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div id="content" class="content-wrapper">
+          {% block content %}
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+
+    {% block scripts %}
+    {% endblock %}
+    <script>
+      // User menu toggle functionality (for non-staff users)
+      (function initUserMenu() {
+        var userMenuToggle = document.getElementById('user-menu-toggle');
+        var userMenuDropdown = document.getElementById('user-menu-dropdown');
+        var desktopUserMenuToggle = document.getElementById('desktop-user-menu-toggle');
+        var desktopUserMenuDropdown = document.getElementById('desktop-user-menu-dropdown');
+        
+        function toggleUserMenu(dropdown) {
+          if (dropdown) {
+            dropdown.classList.toggle('active');
+          }
+        }
+        
+        function closeUserMenus() {
+          if (userMenuDropdown) userMenuDropdown.classList.remove('active');
+          if (desktopUserMenuDropdown) desktopUserMenuDropdown.classList.remove('active');
+        }
+        
+        // Mobile user menu
+        if (userMenuToggle) {
+          userMenuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleUserMenu(userMenuDropdown);
+          });
+        }
+        
+        // Desktop user menu
+        if (desktopUserMenuToggle) {
+          desktopUserMenuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleUserMenu(desktopUserMenuDropdown);
+          });
+        }
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+          if (userMenuToggle && userMenuDropdown && !userMenuToggle.contains(e.target) && !userMenuDropdown.contains(e.target)) {
+            closeUserMenus();
+          }
+          if (desktopUserMenuToggle && desktopUserMenuDropdown && !desktopUserMenuToggle.contains(e.target) && !desktopUserMenuDropdown.contains(e.target)) {
+            closeUserMenus();
+          }
+        });
+      })();
+      
+      // Mobile menu toggle functionality
+      (function initMobileMenu() {
+        var mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        var mobileNav = document.getElementById('mobile-nav');
+        var mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+        var mobileNavClose = document.getElementById('mobile-nav-close');
+        var sidebar = document.getElementById('sidebar');
+        var sidebarOverlay = document.getElementById('sidebar-overlay');
+        
+        function openMobileNav() {
+          if (mobileNav) mobileNav.classList.add('active');
+          if (mobileNavOverlay) mobileNavOverlay.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+        
+        function closeMobileNav() {
+          if (mobileNav) mobileNav.classList.remove('active');
+          if (mobileNavOverlay) mobileNavOverlay.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+        
+        function openSidebar() {
+          if (sidebar) sidebar.classList.add('mobile-open');
+          if (sidebarOverlay) sidebarOverlay.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+        
+        function closeSidebar() {
+          if (sidebar) sidebar.classList.remove('mobile-open');
+          if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+        
+        // Mobile navigation for regular users
+        if (mobileMenuToggle && mobileNav) {
+          mobileMenuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (mobileNav.classList.contains('active')) {
+              closeMobileNav();
+            } else {
+              openMobileNav();
+            }
+          });
+        }
+        
+        // Staff sidebar toggle
+        if (mobileMenuToggle && sidebar && !mobileNav) {
+          mobileMenuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (sidebar.classList.contains('mobile-open')) {
+              closeSidebar();
+            } else {
+              openSidebar();
+            }
+          });
+        }
+        
+        // Close mobile nav
+        if (mobileNavClose) {
+          mobileNavClose.addEventListener('click', function() {
+            closeMobileNav();
+          });
+        }
+        
+        if (mobileNavOverlay) {
+          mobileNavOverlay.addEventListener('click', function() {
+            closeMobileNav();
+          });
+        }
+        
+        // Close mobile nav when clicking on a link
+        if (mobileNav) {
+          var mobileNavLinks = mobileNav.querySelectorAll('.mobile-nav-item');
+          mobileNavLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+              closeMobileNav();
+            });
+          });
+        }
+        
+        // Sidebar overlay for staff
+        if (sidebarOverlay) {
+          sidebarOverlay.addEventListener('click', function() {
+            closeSidebar();
+          });
+        }
+        
+        // Close sidebar when clicking on a sidebar link (mobile)
+        if (sidebar) {
+          var sidebarLinks = sidebar.querySelectorAll('.sidebar-link');
+          sidebarLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+              if (window.innerWidth <= 991.98) {
+                closeSidebar();
+              }
+            });
+          });
+        }
+        
+        // Close menus on window resize
+        window.addEventListener('resize', function() {
+          if (window.innerWidth > 991.98) {
+            closeSidebar();
+            closeMobileNav();
+          }
+        });
+      })();
+      
+      setTimeout(function () {
+        var alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+          // For Bootstrap 5: fade out then remove
+          alert.classList.remove('show');
+          alert.classList.add('fade');
+          setTimeout(function () {
+            alert.remove();
+          }, 500); // wait for fade transition
+        });
+      }, 3000); // 3000 ms = 3 seconds
+    </script>
+    {% if request.user.is_authenticated %}
+    <script>
+      // Periodically clear expired PC bookings so PCs don't stay blocked (red)
+      (function schedulePcCleanup() {
+        const runCleanup = function() {
+          fetch('{% url "main_app:clearup_pcs" %}', { cache: 'no-store' })
+            .then(function() { /* ignore response */ })
+            .catch(function() { /* ignore errors */ });
+        };
+        // Run once on load and then every 60 seconds
+        runCleanup();
+        setInterval(runCleanup, 60000);
+      })();
+    </script>
+    {% endif %}
+    {% if request.user.is_authenticated and request.user.profile.role == 'staff' %}
+    <!-- QR Code Scanner Script -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script>
+      (function initQRScanner() {
+        // Wait for DOM to be fully loaded
+        function waitForElements() {
+          const qrReader = document.getElementById('qr-reader');
+          const startBtn = document.getElementById('qr-start-btn');
+          const stopBtn = document.getElementById('qr-stop-btn');
+          const statusEl = document.getElementById('qr-status');
+          const resultEl = document.getElementById('qr-result');
+          
+          if (!qrReader || !startBtn || !stopBtn) {
+            console.log('QR Scanner elements not found, retrying...');
+            setTimeout(waitForElements, 500);
+            return;
+          }
+          
+          console.log('QR Scanner elements found, initializing...');
+          initializeScanner(qrReader, startBtn, stopBtn, statusEl, resultEl);
+        }
+        
+        function initializeScanner(qrReader, startBtn, stopBtn, statusEl, resultEl) {
+          let html5QrCode = null;
+          let scanning = false;
+          
+          function updateStatus(message, color = '#ffffff') {
+          if (statusEl) {
+            statusEl.textContent = message;
+            statusEl.style.color = color;
+          }
+        }
+        
+        function showResult(text) {
+          if (resultEl) {
+            resultEl.textContent = 'Scanned: ' + text;
+            resultEl.style.display = 'block';
+            setTimeout(function() {
+              resultEl.style.display = 'none';
+            }, 5000);
+          }
+        }
+        
+        function startScanner() {
+          if (scanning) {
+            console.log('Scanner already running');
+            return;
+          }
+          
+          // Check if Html5Qrcode is available
+          if (typeof Html5Qrcode === 'undefined') {
+            console.error('Html5Qrcode library not loaded');
+            updateStatus('Scanner library not loaded', '#ff0000');
+            alert('QR Scanner library failed to load. Please refresh the page.');
+            return;
+          }
+          
+          try {
+            // Clear any previous scanner instance
+            if (qrReader) {
+              qrReader.innerHTML = '';
+            }
+            
+            html5QrCode = new Html5Qrcode("qr-reader");
+            scanning = true;
+            
+            updateStatus('Requesting camera...', '#ffff00');
+            
+            html5QrCode.start(
+              { facingMode: "environment" },
+              {
+                fps: 10,
+                qrbox: function(viewfinderWidth, viewfinderHeight) {
+                  // Make qrbox about 70% of the container
+                  let minEdgePercentage = 0.7;
+                  let minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
+                  let qrboxSize = Math.floor(minEdgeSize * minEdgePercentage);
+                  return {
+                    width: qrboxSize,
+                    height: qrboxSize
+                  };
+                },
+                aspectRatio: 1.0
+              },
+              function(decodedText, decodedResult) {
+                // Successfully scanned
+                console.log('QR Code scanned:', decodedText);
+                updateStatus('QR Code detected!', '#00ff00');
+                showResult(decodedText);
+                
+                // Stop scanning after successful scan
+                if (html5QrCode && scanning) {
+                  html5QrCode.stop().then(function() {
+                    html5QrCode.clear();
+                    scanning = false;
+                    startBtn.style.display = 'flex';
+                    stopBtn.style.display = 'none';
+                    
+                    // Handle the scanned QR code
+                    if (decodedText) {
+                      // If it's a reservation URL, navigate directly (auto-approves)
+                      if (decodedText.includes('/reservation-approval/')) {
+                        console.log('Navigating to reservation approval (auto-approve):', decodedText);
+                        // Extract booking ID and navigate - auto-approves when accessed
+                        var bookingId = decodedText.match(/\/reservation-approval\/(\d+)/);
+                        if (bookingId && bookingId[1]) {
+                          // Always use absolute path starting with /
+                          var path = '/reservation-approval/' + bookingId[1] + '/';
+                          console.log('Navigating to absolute path:', path);
+                          window.location.href = path;
+                        } else {
+                          // If booking ID not found, try to extract from full URL
+                          if (decodedText.includes('://')) {
+                            var urlObj = new URL(decodedText);
+                            path = urlObj.pathname;
+                            if (!path.endsWith('/')) {
+                              path = path + '/';
+                            }
+                            console.log('Extracted path from URL:', path);
+                            window.location.href = path;
+                          } else {
+                            // Ensure absolute path
+                            var path = decodedText.startsWith('/') ? decodedText : '/' + decodedText;
+                            if (!path.endsWith('/')) {
+                              path = path + '/';
+                            }
+                            console.log('Using path:', path);
+                            window.location.href = path;
+                          }
+                        }
+                      } else if (decodedText.includes('/reservation-approved/')) {
+                        // If it already has approved in URL, navigate directly
+                        var bookingId = decodedText.match(/\/reservation-approved\/(\d+)/);
+                        if (bookingId && bookingId[1]) {
+                          var path = '/reservation-approved/' + bookingId[1] + '/';
+                          console.log('Navigating to approved path:', path);
+                          window.location.href = path;
+                        } else if (decodedText.includes('://')) {
+                          var urlObj = new URL(decodedText);
+                          var path = urlObj.pathname;
+                          if (!path.endsWith('/')) {
+                            path = path + '/';
+                          }
+                          window.location.href = path;
+                        } else {
+                          var path = decodedText.startsWith('/') ? decodedText : '/' + decodedText;
+                          if (!path.endsWith('/')) {
+                            path = path + '/';
+                          }
+                          window.location.href = path;
+                        }
+                      } else if (decodedText.startsWith('http://') || decodedText.startsWith('https://')) {
+                        // Handle full URL
+                        window.location.href = decodedText;
+                      } else {
+                        // Display the scanned text
+                        alert('Scanned: ' + decodedText);
+                        updateStatus('Ready to scan', '#ffffff');
+                        
+                        // Show placeholder
+                        const placeholder = document.getElementById('qr-placeholder');
+                        if (placeholder) {
+                          placeholder.style.display = 'flex';
+                        }
+                        const overlay = document.getElementById('qr-overlay');
+                        if (overlay) {
+                          overlay.style.display = 'none';
+                        }
+                      }
+                    }
+                  }).catch(function(stopErr) {
+                    console.error('Error stopping scanner:', stopErr);
+                  });
+                }
+              },
+              function(errorMessage) {
+                // Ignore errors while scanning (this is called frequently during scanning)
+                // Only log if it's a significant error
+                if (errorMessage && !errorMessage.includes('NotFoundException')) {
+                  console.debug('Scanner error:', errorMessage);
+                }
+              }
+            ).then(function() {
+              // Scanner started successfully
+              startBtn.style.display = 'none';
+              stopBtn.style.display = 'flex';
+              updateStatus('Scanning...', '#00ff00');
+              
+              // Hide placeholder when scanning starts
+              const placeholder = document.getElementById('qr-placeholder');
+              if (placeholder) {
+                placeholder.style.display = 'none';
+              }
+              const overlay = document.getElementById('qr-overlay');
+              if (overlay) {
+                overlay.style.display = 'flex';
+              }
+            }).catch(function(err) {
+              console.error('Unable to start scanning:', err);
+              let errorMsg = 'Failed to start scanner';
+              
+              if (err && err.message) {
+                if (err.message.includes('NotReadableError') || err.message.includes('camera')) {
+                  errorMsg = 'Camera not accessible. Please check permissions.';
+                } else if (err.message.includes('NotFoundError')) {
+                  errorMsg = 'No camera found.';
+                } else {
+                  errorMsg = 'Error: ' + err.message;
+                }
+              }
+              
+              updateStatus(errorMsg, '#ff0000');
+              scanning = false;
+              html5QrCode = null;
+              startBtn.style.display = 'flex';
+              stopBtn.style.display = 'none';
+              
+              // Show placeholder on error
+              const placeholder = document.getElementById('qr-placeholder');
+              if (placeholder) {
+                placeholder.style.display = 'flex';
+              }
+              const overlay = document.getElementById('qr-overlay');
+              if (overlay) {
+                overlay.style.display = 'none';
+              }
+              
+              alert(errorMsg);
+            });
+            
+          } catch (err) {
+            console.error('QR Scanner initialization error:', err);
+            updateStatus('Scanner error: ' + err.message, '#ff0000');
+            scanning = false;
+            html5QrCode = null;
+            startBtn.style.display = 'flex';
+            stopBtn.style.display = 'none';
+            
+            // Show placeholder on error
+            const placeholder = document.getElementById('qr-placeholder');
+            if (placeholder) {
+              placeholder.style.display = 'flex';
+            }
+            const overlay = document.getElementById('qr-overlay');
+            if (overlay) {
+              overlay.style.display = 'none';
+            }
+            
+            alert('Scanner initialization failed: ' + err.message);
+          }
+        }
+        
+          function stopScanner() {
+            if (!scanning || !html5QrCode) return;
+            
+            html5QrCode.stop().then(function() {
+              html5QrCode.clear();
+              html5QrCode = null;
+              scanning = false;
+              startBtn.style.display = 'flex';
+              stopBtn.style.display = 'none';
+              updateStatus('Ready to scan', '#ffffff');
+              
+              // Clear the container
+              if (qrReader) {
+                qrReader.innerHTML = '';
+              }
+              
+              // Show placeholder when scanning stops
+              const placeholder = document.getElementById('qr-placeholder');
+              if (placeholder) {
+                placeholder.style.display = 'flex';
+              }
+              const overlay = document.getElementById('qr-overlay');
+              if (overlay) {
+                overlay.style.display = 'none';
+              }
+            }).catch(function(err) {
+              console.error('Error stopping scanner:', err);
+              scanning = false;
+              startBtn.style.display = 'flex';
+              stopBtn.style.display = 'none';
+            });
+          }
+          
+          // Attach event listeners
+          if (startBtn) {
+            startBtn.addEventListener('click', startScanner);
+          }
+          
+          if (stopBtn) {
+            stopBtn.addEventListener('click', stopScanner);
+          }
+        
+          // Clean up on page unload
+          window.addEventListener('beforeunload', function() {
+            if (scanning && html5QrCode) {
+              html5QrCode.stop().then(function() {
+                html5QrCode.clear();
+              }).catch(function() {});
+            }
+          });
+          
+          // Initialize on DOM ready
+          console.log('QR Scanner script loaded');
+        }
+        
+        // Start waiting for elements when DOM is ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', waitForElements);
+        } else {
+          waitForElements();
+        }
+      })();
+    </script>
+    <script>
+      (function initAlertsWS(){
+        var reconnectAttempts = 0;
+        var maxReconnectAttempts = 3;
+        var reconnectDelay = 5000;
+        var ws = null;
+        var shouldReconnect = true;
+        
+        function connect() {
+          try {
+            ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + '/ws/alerts/');
+            
+            ws.onopen = function() {
+              // WebSocket connection opened successfully - reset reconnect attempts
+              reconnectAttempts = 0;
+            };
+            
+            ws.onerror = function(error) {
+              // Silently handle WebSocket connection errors (404, connection refused, etc.)
+              // Mark for no reconnect if we've hit max attempts
+              if (reconnectAttempts >= maxReconnectAttempts) {
+                shouldReconnect = false;
+              }
+            };
+            
+            ws.onclose = function() {
+              // Only attempt reconnect if we haven't exceeded max attempts
+              if (shouldReconnect && reconnectAttempts < maxReconnectAttempts) {
+                reconnectAttempts++;
+                setTimeout(function() {
+                  if (shouldReconnect) {
+                    connect();
+                  }
+                }, reconnectDelay);
+              }
+            };
+            
+            ws.onmessage = function(evt){
+              try {
+                var data = JSON.parse(evt.data);
+                var msg = (data.title || 'Alert') + ': ' + (data.message || '');
+                // Simple toast/alert
+                var div = document.createElement('div');
+                div.className = 'alert alert-warning alert-dismissible fade show text-center';
+                div.style.position = 'fixed'; div.style.top='20px'; div.style.right='20px'; div.style.zIndex='2000';
+                div.innerHTML = msg + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+                document.body.appendChild(div);
+                setTimeout(function(){ try{ div.remove(); }catch(e){} }, 8000);
+              } catch(e) { 
+                // Silently handle bad payload
+              }
+            };
+          } catch(e) { 
+            // Silently handle WebSocket initialization errors
+            shouldReconnect = false;
+          }
+        }
+        
+        connect();
+      })();
+    </script>
+    {% endif %}
+  </body>
+</html>

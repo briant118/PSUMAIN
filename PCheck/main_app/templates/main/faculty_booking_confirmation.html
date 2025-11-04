@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load template_filters %}
+{% load math_filters %}
+{% load static %}
+
+{% block title %}Faculty Booking Confirmation{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+  <div class="card col-md-8 offset-md-2 shadow-lg mb-5 bg-body rounded-bottom rounded-5">
+    <div class="text-center card-title">
+      <div class="p-4 bg-warning rounded-bottom rounded-5"></div>
+    </div>
+    <div class="card-body p-5">
+      <div class="text-center">
+        <p class="fs-5 mb-5">Thank you! Your request has been successfully submitted and is now pending approval.<br>A confirmation email will be sent to you once approved.</p>
+        <a href="{% url 'main_app:home' %}" class="btn btn-sm btn-secondary"><i class="fa-solid fa-chevron-left"></i> back to home page</a>
+      </div>
+    </div> <!-- end of card-body -->
+  </div> <!-- end of card -->
+
+</div>
+{% endblock %}

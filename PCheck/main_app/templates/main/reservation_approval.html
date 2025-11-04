@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reservation Approval{% endblock %}
+
+{% block content %}
+<div class="container col-md-4">
+  <div class="header text-center mt-3 mb-3">
+    <h2>Reservation Approval</h2>
+  </div>
+  <div class="card">
+    <div class="card-header text-center">
+      <h4>Details</h4>
+    </div>
+    <div class="card-body">
+      <div class="bg-light p-2 mb-2">
+        <h4 class="text-center">Requester</h4>
+        <p><strong>Name: </strong>{{ reservation.user.get_full_name }} <br>
+          <strong>ID: </strong>{{ reservation.user.profile.school_id }} <br>
+          <strong>Course: </strong>{{ reservation.user.profile.course }} <br>
+          <strong>Year: </strong>{{ reservation.user.profile.year }} <br>
+          <strong>Block: </strong>{{ reservation.user.profile.block }}
+        </p>
+      </div>
+      <div class="bg-light p-2">
+        <h4 class="text-center">PC details</h4>
+        <p>
+          <strong>PC: </strong>{{ reservation.pc.name }} <br>
+          <strong>Start time: </strong>{{ reservation.start_time }} <br>
+          <strong>Duration: </strong>{{ reservation.duration }} <br>
+          <strong>Number of PC: </strong>{{ reservation.num_of_devices }}
+        </p>
+      </div>
+    </div>
+  </div><!-- end of card -->
+  <div id="control" class="p2 text-center mt-2">
+    <a href="{% url 'main_app:reservation-approved' pk=reservation.pk %}" class="btn btn-lg btn-success rounded rounded-3">approve</a>
+    <a href="{% url 'main_app:reservation-declined' pk=reservation.pk %}" class="btn btn-lg btn-danger rounded rounded-3">decline</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <div class="card border rounded shadow-lg mb-5 bg-body">
+        <div class="card-header text-center bg-warning">
+          <h2 class="mb-0">Profile</h2>
+        </div>
+        <div class="card-body p-4">
+          <!-- Profile Picture - Top -->
+          <div class="text-center mb-4">
+            {% if profile.profile_picture %}
+              <img src="{{ profile.profile_picture.url }}" class="rounded" alt="profile picture" style="width: 150px; height: 150px; object-fit: cover; max-width: 100%;">
+            {% else %}
+              <div class="bg-secondary rounded d-flex align-items-center justify-content-center mx-auto" style="width: 150px; height: 150px; max-width: 100%;">
+                <i class="fa-solid fa-user fa-4x text-white"></i>
+              </div>
+            {% endif %}
+          </div>
+          <!-- User Information -->
+          <div class="profile-info">
+            <h4 class="mb-2 fw-bold text-center">
+              {{ profile.user.get_full_name|default:profile.user.username }}
+            </h4>
+            <p class="text-muted mb-3 text-center">{{ profile.user.email }}</p>
+            <div class="mt-3">
+              {% if profile.college %}
+              <p class="mb-2"><strong>College: </strong>{{ profile.college }}</p>
+              {% endif %}
+              {% if profile.course %}
+              <p class="mb-2"><strong>Course: </strong>{{ profile.course }}</p>
+              {% endif %}
+              {% if profile.year %}
+              <p class="mb-2"><strong>Year: </strong>{{ profile.year }}</p>
+              {% endif %}
+              {% if profile.block %}
+              <p class="mb-2"><strong>Block: </strong>{{ profile.block }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-white">
+          <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'account:edit-profile' pk=profile.pk %}" class="btn btn-sm btn-primary">update</a>
+            {% if user.has_usable_password %}
+            <a href="{% url 'account:password_change' %}" class="btn btn-sm btn-success">change password</a>
+            {% else %}
+            <a href="{% url 'account:password_set' %}" class="btn btn-sm btn-success">set password</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @media (max-width: 767.98px) {
+    .profile-info p {
+      font-size: 0.95rem;
+    }
+  }
+</style>
+{% endblock %}
